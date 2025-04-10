@@ -13,12 +13,14 @@ public class ZL {
     public static Calendar base = Calendar.getInstance();
 
     public static void main(String[] args) {
+
         String prompt = "";
         checkPrompt(prompt);
 
-        // setBaseCalendar("2024.4.5");
+        setBaseCalendarToTomorrow();
+        // setBaseCalendar("2025.4.10");
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 10; i++) {
             if (!isTradeDay(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
                 continue;
@@ -43,6 +45,13 @@ public class ZL {
         base.set(Calendar.YEAR, Integer.parseInt(year));
         base.set(Calendar.MONTH, Integer.parseInt(month) - 1);
         base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dayOfMonth));
+    }
+
+    public static void setBaseCalendarToTomorrow() {
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.DAY_OF_YEAR, 1);
+        String date = instance.get(Calendar.YEAR) + "." + (instance.get(Calendar.MONTH) + 1) + "." + instance.get(Calendar.DAY_OF_MONTH);
+        setBaseCalendar(date);
     }
 
     public static boolean isTradeDay(Calendar calendar) {
