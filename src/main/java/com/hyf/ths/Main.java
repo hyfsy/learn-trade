@@ -23,7 +23,7 @@ public class Main {
 
         Calendar base = CalendarUtil.base;
         for (int i = 0; i < config.getLoop(); i++) {
-            if (!CalendarUtil.isTradeDay(base)) {
+            if (CalendarUtil.needSkip(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
                 continue;
             }

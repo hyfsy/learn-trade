@@ -1,13 +1,17 @@
 package com.hyf.ths;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author baB_hyf
  * @date 2025/04/11
  */
 public class Config {
 
-    public int loop = 10;
-    public String base = "+1";
+    private int          loop = 10;
+    private String       base = "+1";
+    private List<String> black = new ArrayList<>();
 
     public int getLoop() {
         return loop;
@@ -23,5 +27,13 @@ public class Config {
 
     public void setBase(String base) {
         this.base = base;
+    }
+
+    public List<String> getBlack() {
+        return black;
+    }
+
+    public void setBlack(List<String> black) {
+        this.black = black;
     }
 }

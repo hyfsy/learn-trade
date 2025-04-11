@@ -26,9 +26,6 @@ public class DayRangePromptStrategy implements PromptStrategy {
         for (int i = 0; i < prevOffsetLoop; i++) {
             CalendarUtil.addCalendarSkipNotTradeDay(prevCalendar, Calendar.DAY_OF_YEAR, prevDelta);
         }
-        int prevYear = prevCalendar.get(Calendar.YEAR);
-        int prevMonth = prevCalendar.get(Calendar.MONTH) + 1;
-        int prevDayOfMonth = prevCalendar.get(Calendar.DAY_OF_MONTH);
 
         Calendar nextCalendar = (Calendar) CalendarUtil.getBaseCalendar().clone();
         int nextOffsetLoop = nextOffset < 0 ? -nextOffset : nextOffset;
@@ -36,10 +33,7 @@ public class DayRangePromptStrategy implements PromptStrategy {
         for (int i = 0; i < nextOffsetLoop; i++) {
             CalendarUtil.addCalendarSkipNotTradeDay(nextCalendar, Calendar.DAY_OF_YEAR, nextDelta);
         }
-        int nextYear = nextCalendar.get(Calendar.YEAR);
-        int nextMonth = nextCalendar.get(Calendar.MONTH) + 1;
-        int nextDayOfMonth = nextCalendar.get(Calendar.DAY_OF_MONTH);
 
-        return prevYear + "." + prevMonth + "." + prevDayOfMonth + "日到" + nextYear + "." + nextMonth + "." + nextDayOfMonth + "日";
+        return CalendarUtil.toYYYY_MM_DD(prevCalendar) + "日到" + CalendarUtil.toYYYY_MM_DD(nextCalendar) + "日";
     }
 }

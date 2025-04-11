@@ -21,9 +21,6 @@ public class BeforeXDayPromptStrategy implements PromptStrategy {
         for (int i = 0; i < x; i++) {
             CalendarUtil.addCalendarSkipNotTradeDay(calendar, Calendar.DAY_OF_YEAR, -1);
         }
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        return year + "." + month + "." + dayOfMonth + "日";
+        return CalendarUtil.toYYYY_MM_DD(calendar) + "日";
     }
 }
