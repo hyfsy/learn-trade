@@ -20,7 +20,11 @@ public class ConfigUtil {
             String row;
             StringBuilder sb = new StringBuilder();
             while ((row = reader.readLine()) != null) {
-                sb.append(row).append("，");
+                String trimmedText = row.trim();
+                if (trimmedText.isEmpty()) {
+                    continue;
+                }
+                sb.append(trimmedText).append("，");
             }
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
