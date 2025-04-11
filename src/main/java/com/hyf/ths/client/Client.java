@@ -1,4 +1,4 @@
-package com.hyf.ths;
+package com.hyf.ths.client;
 
 
 import com.alibaba.fastjson.JSON;
