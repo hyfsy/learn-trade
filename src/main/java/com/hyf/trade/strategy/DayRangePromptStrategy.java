@@ -1,6 +1,6 @@
-package com.hyf.ths.strategy;
+package com.hyf.trade.strategy;
 
-import com.hyf.ths.util.CalendarUtil;
+import com.hyf.trade.util.CalendarUtil;
 
 import java.util.Calendar;
 

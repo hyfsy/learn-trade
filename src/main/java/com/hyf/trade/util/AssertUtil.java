@@ -1,4 +1,4 @@
-package com.hyf.ths.util;
+package com.hyf.trade.util;
 
 /**
  * @author baB_hyf

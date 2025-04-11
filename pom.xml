@@ -15,6 +15,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83_noneautotype</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
             <version>5.2.1</version>
@@ -25,4 +30,73 @@
             <version>1.2.83</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <!--<descriptors>-->
+                    <!--    <descriptor>assembly/assembly.xml</descriptor>-->
+                    <!--</descriptors>-->
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <Main-Class>com.hyf.trade.Main</Main-Class>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--<plugin>-->
+            <!--    <groupId>org.apache.maven.plugins</groupId>-->
+            <!--    <artifactId>maven-jar-plugin</artifactId>-->
+            <!--    <version>2.4</version>-->
+            <!--    <configuration>-->
+            <!--        <finalName>learn-trade</finalName>-->
+            <!--        <archive>-->
+            <!--            <manifest>-->
+            <!--                <addClasspath>false</addClasspath>-->
+            <!--            </manifest>-->
+            <!--            <manifestEntries>-->
+            <!--                <Main-Class>com.hyf.trade.Main</Main-Class>-->
+            <!--            </manifestEntries>-->
+            <!--        </archive>-->
+            <!--    </configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy hotcode2.autoremote.jar</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${basedir}/target/classes/strategy/config.json"
+                                      todir="${basedir}/target/strategy" overwrite="true"/>
+                                <copy file="${basedir}/target/classes/strategy/strategy.txt"
+                                      todir="${basedir}/target/strategy" overwrite="true"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

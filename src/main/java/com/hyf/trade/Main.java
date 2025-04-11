@@ -1,9 +1,9 @@
-package com.hyf.ths;
+package com.hyf.trade;
 
-import com.hyf.ths.util.AssertUtil;
-import com.hyf.ths.util.CalendarUtil;
-import com.hyf.ths.util.ConfigUtil;
-import com.hyf.ths.util.StrategyUtil;
+import com.hyf.trade.util.AssertUtil;
+import com.hyf.trade.util.CalendarUtil;
+import com.hyf.trade.util.ConfigUtil;
+import com.hyf.trade.util.StrategyUtil;
 
 import java.util.Calendar;
 
@@ -14,6 +14,7 @@ import java.util.Calendar;
 public class Main {
 
     public static void main(String[] args) {
+        // System.setProperty("jarMode", "true");
 
         String prompt = ConfigUtil.getStrategy();
         AssertUtil.notBlank(prompt);

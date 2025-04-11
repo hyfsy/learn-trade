@@ -1,9 +1,9 @@
-package com.hyf.ths.util;
+package com.hyf.trade.util;
 
-import com.hyf.ths.strategy.AfterXDayRangePromptStrategy;
-import com.hyf.ths.strategy.BeforeXDayPromptStrategy;
-import com.hyf.ths.strategy.BeforeXDayRangePromptStrategy;
-import com.hyf.ths.strategy.PromptStrategy;
+import com.hyf.trade.strategy.AfterXDayRangePromptStrategy;
+import com.hyf.trade.strategy.BeforeXDayPromptStrategy;
+import com.hyf.trade.strategy.BeforeXDayRangePromptStrategy;
+import com.hyf.trade.strategy.PromptStrategy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
