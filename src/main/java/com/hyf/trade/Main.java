@@ -1,9 +1,6 @@
 package com.hyf.trade;
 
-import com.hyf.trade.util.AssertUtil;
-import com.hyf.trade.util.CalendarUtil;
-import com.hyf.trade.util.ConfigUtil;
-import com.hyf.trade.util.StrategyUtil;
+import com.hyf.trade.util.*;
 
 import java.util.Calendar;
 
@@ -16,6 +13,13 @@ public class Main {
     public static void main(String[] args) {
         // System.setProperty("jarMode", "true");
 
+        generateStrategy();
+        TradeUtil.printSettlementDays();
+        System.out.println("currentDayIsSettlementDay: " + TradeUtil.currentDayIsSettlementDay());
+
+    }
+
+    private static void generateStrategy() {
         String prompt = ConfigUtil.getStrategy();
         AssertUtil.notBlank(prompt);
 
@@ -32,8 +36,6 @@ public class Main {
             System.out.println(transformedPrompt);
             base.add(Calendar.DAY_OF_YEAR, -1);
         }
-
-        // printTransformStrategyMap();
     }
 
     private static void initBaseCalendar(Config config) {

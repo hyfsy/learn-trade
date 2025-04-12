@@ -1,11 +1,10 @@
 package com.hyf.trade.util;
 
-import com.hyf.trade.strategy.AfterXDayRangePromptStrategy;
-import com.hyf.trade.strategy.BeforeXDayPromptStrategy;
-import com.hyf.trade.strategy.BeforeXDayRangePromptStrategy;
 import com.hyf.trade.strategy.PromptStrategy;
+import com.hyf.trade.strategy.factory.PromptStrategyFactory;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,11 +27,12 @@ public class StrategyUtil {
     public static Map<String, PromptStrategy> strategyMap() {
         Map<String, PromptStrategy> map = new LinkedHashMap<>();
 
-        map.put("当前交易日", new BeforeXDayPromptStrategy(0));
-        map.put("上上个交易日", new BeforeXDayPromptStrategy(2));
-        map.put("上个交易日", new BeforeXDayPromptStrategy(1));
-        map.put("前三个交易日", new BeforeXDayRangePromptStrategy(3));
-        map.put("后五个交易日", new AfterXDayRangePromptStrategy(5));
+        List<PromptStrategyFactory> strategies = PromptStrategyFactory.getStrategies();
+        for (PromptStrategyFactory strategy : strategies) {
+            Map<String, PromptStrategy> build = strategy.build();
+            map.putAll(build);
+        }
+
         return map;
     }
 

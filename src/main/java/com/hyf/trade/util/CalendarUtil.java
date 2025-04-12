@@ -36,7 +36,9 @@ public class CalendarUtil {
     }
 
     public static boolean needSkip(Calendar calendar) {
-        return !isTradeDay(calendar) || ConfigUtil.getConfig().getBlack().contains(toYYYY_MM_DD(calendar));
+        return !isTradeDay(calendar)
+                || ConfigUtil.getConfig().getHoliday().contains(toYYYY_MM_DD(calendar))
+                || ConfigUtil.getConfig().getBlack().contains(toYYYY_MM_DD(calendar));
     }
 
     public static boolean isTradeDay(Calendar calendar) {
@@ -49,11 +51,44 @@ public class CalendarUtil {
         return calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static void addCalendarSkipNotTradeDay(Calendar calendar, int field, int value) {
+    public static int max(String day, String another) {
+        String[] daySection = day.split("\\.");
+        String[] anotherSection = another.split("\\.");
+        int dayY = Integer.parseInt(daySection[0]);
+        int anotherY = Integer.parseInt(anotherSection[0]);
+        int y = Integer.compare(dayY, anotherY);
+        if (y != 0) {
+            return y;
+        }
+        int dayM = Integer.parseInt(daySection[1]);
+        int anotherM = Integer.parseInt(anotherSection[1]);
+        int m = Integer.compare(dayM, anotherM);
+        if (m != 0) {
+            return m;
+        }
+        int dayD = Integer.parseInt(daySection[2]);
+        int anotherD = Integer.parseInt(anotherSection[2]);
+        int d = Integer.compare(dayD, anotherD);
+        return d;
+    }
+
+    public static void addCalendarSupportSkip(Calendar calendar, int field, int value) {
         do {
             calendar.add(field, value);
         }
         // 非交易日继续前进一次
         while (needSkip(calendar));
+    }
+
+    public static void addCalendarForwardOneByOneSupportSkip(Calendar calendar, int field, int value) {
+        int time = value > 0 ? value : value / -1;
+        boolean neg = value < 0;
+        for (int i = 0; i < time; i++) {
+            do {
+                calendar.add(field, neg ? -1 : 1);
+            }
+            // 非交易日继续前进一次
+            while (needSkip(calendar));
+        }
     }
 }

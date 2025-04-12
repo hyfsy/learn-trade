@@ -11,6 +11,7 @@ public class Config {
 
     private int          loop = 10;
     private String       base = "+1";
+    private List<String> holiday = new ArrayList<>();
     private List<String> black = new ArrayList<>();
 
     public int getLoop() {
@@ -27,6 +28,14 @@ public class Config {
 
     public void setBase(String base) {
         this.base = base;
+    }
+
+    public List<String> getHoliday() {
+        return holiday;
+    }
+
+    public void setHoliday(List<String> holiday) {
+        this.holiday = holiday;
     }
 
     public List<String> getBlack() {

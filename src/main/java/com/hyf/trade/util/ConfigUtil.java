@@ -12,39 +12,47 @@ import java.io.*;
 public class ConfigUtil {
 
     private static final boolean jarMode = Boolean.getBoolean("jarMode");
+    public static String strategy;
+    public static Config config;
 
     public static String getStrategy() {
-        InputStream resource = getResource("/strategy/strategy.txt");
-        try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
-            String row;
-            StringBuilder sb = new StringBuilder();
-            while ((row = reader.readLine()) != null) {
-                String trimmedText = row.trim();
-                if (trimmedText.isEmpty()) {
-                    continue;
+        if (strategy == null) {
+            InputStream resource = getResource("/strategy/strategy.txt");
+            try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
+                String row;
+                StringBuilder sb = new StringBuilder();
+                while ((row = reader.readLine()) != null) {
+                    String trimmedText = row.trim();
+                    if (trimmedText.isEmpty()) {
+                        continue;
+                    }
+                    sb.append(trimmedText).append("，");
                 }
-                sb.append(trimmedText).append("，");
+                sb.deleteCharAt(sb.length() - 1);
+                strategy = sb.toString();
+            } catch (IOException e) {
+                throw new RuntimeException("read strategy file failed");
             }
-            sb.deleteCharAt(sb.length() - 1);
-            return sb.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("read strategy file failed");
         }
+        return strategy;
     }
 
     public static Config getConfig() {
-        InputStream resource = getResource("/strategy/config.json");
-        try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
-            String row;
-            StringBuilder sb = new StringBuilder();
-            while ((row = reader.readLine()) != null) {
-                sb.append(row);
+        if (config == null) {
+            InputStream resource = getResource("/strategy/config.json");
+            try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
+                String row;
+                StringBuilder sb = new StringBuilder();
+                while ((row = reader.readLine()) != null) {
+                    sb.append(row);
+                }
+                String json = sb.toString();
+                config = JSON.parseObject(json, Config.class);
+            } catch (IOException e) {
+                throw new RuntimeException("read strategy file failed");
             }
-            String json = sb.toString();
-            return JSON.parseObject(json, Config.class);
-        } catch (IOException e) {
-            throw new RuntimeException("read strategy file failed");
         }
+        return config;
     }
 
     private static InputStream getResource(String path) {
