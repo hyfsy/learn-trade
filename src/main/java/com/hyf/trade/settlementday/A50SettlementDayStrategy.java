@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class A50SettlementDayStrategy implements SettlementDayStrategy {
 
-    private static final List<Integer> months = Arrays.asList(3, 6, 9, 12);
-    private static final int           day    = 2;
+    private static final List<Integer> quarters = Arrays.asList(3, 6, 9, 12); // 四季度
+    private static final int           day      = 2;
 
     @Override
     public String getName() {
@@ -25,13 +25,12 @@ public class A50SettlementDayStrategy implements SettlementDayStrategy {
     }
 
     @Override
-    public List<String> getSettlementDays() {
+    public List<String> getSettlementDays(Calendar calendar) {
         List<Integer> realMonths = new ArrayList<>();
-        for (Integer month : months) {
+        for (Integer month : quarters) {
             realMonths.add(month - 1);
             realMonths.add(month);
         }
-        Calendar calendar = Calendar.getInstance();
         List<String> settlementDays = new ArrayList<>();
         for (Integer realMonth : realMonths) {
             calendar.set(Calendar.MONTH, realMonth - 1);
@@ -40,7 +39,7 @@ public class A50SettlementDayStrategy implements SettlementDayStrategy {
             for (int i = 0; i < day; i++) {
                 CalendarUtil.addCalendarSupportSkip(calendar, Calendar.DAY_OF_YEAR, -1);
             }
-            String yyyy_mm_dd = CalendarUtil.toYYYY_MM_DD(calendar);
+            String yyyy_mm_dd = CalendarUtil.to_yyyy_MM_dd(calendar);
             settlementDays.add(yyyy_mm_dd);
         }
         return settlementDays;

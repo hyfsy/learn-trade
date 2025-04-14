@@ -31,14 +31,14 @@ public class CalendarUtil {
     public static void setBaseCalendarByDelta(int delta) {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.DAY_OF_YEAR, delta);
-        String date = toYYYY_MM_DD(instance);
+        String date = to_yyyy_MM_dd(instance);
         setBaseCalendar(date);
     }
 
     public static boolean needSkip(Calendar calendar) {
         return !isTradeDay(calendar)
-                || ConfigUtil.getConfig().getHoliday().contains(toYYYY_MM_DD(calendar))
-                || ConfigUtil.getConfig().getBlack().contains(toYYYY_MM_DD(calendar));
+                || ConfigUtil.getConfig().getHoliday().contains(to_yyyy_MM_dd(calendar))
+                || ConfigUtil.getConfig().getBlack().contains(to_yyyy_MM_dd(calendar));
     }
 
     public static boolean isTradeDay(Calendar calendar) {
@@ -47,7 +47,7 @@ public class CalendarUtil {
         return !notTradeDay;
     }
 
-    public static String toYYYY_MM_DD(Calendar calendar) {
+    public static String to_yyyy_MM_dd(Calendar calendar) {
         return calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.DAY_OF_MONTH);
     }
 
@@ -90,5 +90,9 @@ public class CalendarUtil {
             // 非交易日继续前进一次
             while (needSkip(calendar));
         }
+    }
+
+    public static Calendar copy(Calendar calendar) {
+        return (Calendar) calendar.clone();
     }
 }

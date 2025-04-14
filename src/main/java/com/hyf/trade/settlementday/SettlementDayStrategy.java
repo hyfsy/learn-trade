@@ -1,6 +1,7 @@
 package com.hyf.trade.settlementday;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -19,5 +20,5 @@ public interface SettlementDayStrategy {
 
     String getName();
 
-    List<String> getSettlementDays();
+    List<String> getSettlementDays(Calendar calendar);
 }

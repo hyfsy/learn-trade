@@ -11,20 +11,25 @@ import java.util.*;
 public class TradeUtil {
 
     public static boolean currentDayIsSettlementDay() {
-        return isSettlementDay(Calendar.getInstance());
+        int currentYear = currentYear();
+        Calendar calendar = Calendar.getInstance();
+        return isSettlementDay(currentYear, calendar);
     }
 
-    public static boolean isSettlementDay(Calendar calendar) {
-        String s = CalendarUtil.toYYYY_MM_DD(calendar);
-        return getSettlementDays().contains(s);
+    public static boolean isSettlementDay(int year, Calendar calendar) {
+        String yyyyMMdd = CalendarUtil.to_yyyy_MM_dd(calendar);
+        return getSettlementDays(year).contains(yyyyMMdd);
     }
 
-    public static List<String> getSettlementDays() {
+    public static List<String> getSettlementDays(int year) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
 
         Set<String> days = new HashSet<>();
         List<SettlementDayStrategy> strategies = SettlementDayStrategy.getStrategies();
         for (SettlementDayStrategy strategy : strategies) {
-            days.addAll(strategy.getSettlementDays());
+            days.addAll(strategy.getSettlementDays(CalendarUtil.copy(calendar)));
         }
         days.removeAll(ConfigUtil.getConfig().getHoliday());
         days.removeAll(ConfigUtil.getConfig().getBlack());
@@ -33,21 +38,37 @@ public class TradeUtil {
     }
 
     public static void printSettlementDays() {
+        printSettlementDays(currentYear());
+    }
+
+    public static void printSettlementDays(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
         List<SettlementDayStrategy> strategies = SettlementDayStrategy.getStrategies();
-        strategies.stream().map(SettlementDayStrategy::getSettlementDays).flatMap(Collection::stream)
+        strategies.stream().map(s -> s.getSettlementDays(CalendarUtil.copy(calendar))).flatMap(Collection::stream)
                 .sorted(CalendarUtil::max).forEach(System.out::println);
     }
 
     public static void printSettlementDaysSeparately() {
+        printSettlementDaysSeparately(currentYear());
+    }
+
+    public static void printSettlementDaysSeparately(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
         List<SettlementDayStrategy> strategies = SettlementDayStrategy.getStrategies();
         StringBuilder sb = new StringBuilder();
         for (SettlementDayStrategy strategy : strategies) {
-            List<String> settlementDays = strategy.getSettlementDays();
+            List<String> settlementDays = strategy.getSettlementDays(CalendarUtil.copy(calendar));
             sb.append(strategy.getName()).append(":").append("\r\n");
             for (String settlementDay : settlementDays) {
                 sb.append(" - ").append(settlementDay).append("\r\n");
             }
         }
         System.out.println(sb.toString());
+    }
+
+    public static int currentYear() {
+        return Calendar.getInstance().get(Calendar.YEAR);
     }
 }

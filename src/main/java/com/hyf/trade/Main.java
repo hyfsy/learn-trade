@@ -14,9 +14,7 @@ public class Main {
         // System.setProperty("jarMode", "true");
 
         generateStrategy();
-        TradeUtil.printSettlementDays();
-        System.out.println("currentDayIsSettlementDay: " + TradeUtil.currentDayIsSettlementDay());
-
+        printResentSettlementDay();
     }
 
     private static void generateStrategy() {
@@ -46,6 +44,17 @@ public class Main {
         else {
             int delta = Integer.parseInt(baseString);
             CalendarUtil.setBaseCalendarByDelta(delta);
+        }
+    }
+
+    private static void printResentSettlementDay() {
+        Calendar calendar = Calendar.getInstance();
+        for (int i = 0; i < 7; i++) {
+            boolean settlementDay = TradeUtil.isSettlementDay(TradeUtil.currentYear(), calendar);
+            if (settlementDay) {
+                System.out.println("[" + CalendarUtil.to_yyyy_MM_dd(calendar) + "] is settlement day");
+            }
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
     }
 }

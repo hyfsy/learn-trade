@@ -13,8 +13,7 @@ import java.util.List;
 public abstract class AbstractStockIndexSettlementDayStrategy implements SettlementDayStrategy {
 
     @Override
-    public List<String> getSettlementDays() {
-        Calendar calendar = Calendar.getInstance();
+    public List<String> getSettlementDays(Calendar calendar) {
         List<String> settlementDays = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
             calendar.set(Calendar.MONTH, i);
@@ -36,7 +35,7 @@ public abstract class AbstractStockIndexSettlementDayStrategy implements Settlem
             while (CalendarUtil.needSkip(calendar)) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
             }
-            String yyyy_mm_dd = CalendarUtil.toYYYY_MM_DD(calendar);
+            String yyyy_mm_dd = CalendarUtil.to_yyyy_MM_dd(calendar);
             settlementDays.add(yyyy_mm_dd);
         }
         return settlementDays;

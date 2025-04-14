@@ -1,3 +1,4 @@
 com.hyf.trade.settlementday.StockIndexFuturesSettlementDayStrategy
 com.hyf.trade.settlementday.StockIndexOptionSettlementDayStrategy
 com.hyf.trade.settlementday.A50SettlementDayStrategy
+# com.hyf.trade.settlementday.EOSSettlementDayStrategy

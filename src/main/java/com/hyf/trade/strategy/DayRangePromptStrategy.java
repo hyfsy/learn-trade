@@ -34,6 +34,6 @@ public class DayRangePromptStrategy implements PromptStrategy {
             CalendarUtil.addCalendarSupportSkip(nextCalendar, Calendar.DAY_OF_YEAR, nextDelta);
         }
 
-        return CalendarUtil.toYYYY_MM_DD(prevCalendar) + "日到" + CalendarUtil.toYYYY_MM_DD(nextCalendar) + "日";
+        return CalendarUtil.to_yyyy_MM_dd(prevCalendar) + "日到" + CalendarUtil.to_yyyy_MM_dd(nextCalendar) + "日";
     }
 }

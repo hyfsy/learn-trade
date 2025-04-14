@@ -21,6 +21,6 @@ public class BeforeXDayPromptStrategy implements PromptStrategy {
         for (int i = 0; i < x; i++) {
             CalendarUtil.addCalendarSupportSkip(calendar, Calendar.DAY_OF_YEAR, -1);
         }
-        return CalendarUtil.toYYYY_MM_DD(calendar) + "日";
+        return CalendarUtil.to_yyyy_MM_dd(calendar) + "日";
     }
 }
