@@ -50,7 +50,8 @@ public class Main {
     private static void printResentSettlementDay() {
         Calendar calendar = Calendar.getInstance();
         for (int i = 0; i < 7; i++) {
-            boolean settlementDay = TradeUtil.isSettlementDay(TradeUtil.currentYear(), calendar);
+            int year = calendar.get(Calendar.YEAR);
+            boolean settlementDay = TradeUtil.isSettlementDay(year, calendar);
             if (settlementDay) {
                 System.out.println("[" + CalendarUtil.to_yyyy_MM_dd(calendar) + "] is settlement day");
             }
