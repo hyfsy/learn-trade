@@ -48,6 +48,7 @@ public class Main {
     }
 
     private static void printResentSettlementDay() {
+        System.out.println();
         Calendar calendar = Calendar.getInstance();
         for (int i = 0; i < 7; i++) {
             int year = calendar.get(Calendar.YEAR);
