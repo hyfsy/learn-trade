@@ -26,6 +26,9 @@ public class ConfigUtil {
                     if (trimmedText.isEmpty()) {
                         continue;
                     }
+                    if (trimmedText.startsWith("#")) {
+                        continue;
+                    }
                     sb.append(trimmedText).append("，");
                 }
                 sb.deleteCharAt(sb.length() - 1);
