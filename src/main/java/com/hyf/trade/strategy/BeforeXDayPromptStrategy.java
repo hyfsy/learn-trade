@@ -16,8 +16,8 @@ public class BeforeXDayPromptStrategy implements PromptStrategy {
     }
 
     @Override
-    public String getStrategy() {
-        Calendar calendar = (Calendar) CalendarUtil.getBaseCalendar().clone();
+    public String getStrategy(PromptStrategyContext context) {
+        Calendar calendar = CalendarUtil.copy(context.getBaseCalendar());
         for (int i = 0; i < x; i++) {
             CalendarUtil.addCalendarSupportSkip(calendar, Calendar.DAY_OF_YEAR, -1);
         }

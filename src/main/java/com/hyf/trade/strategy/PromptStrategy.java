@@ -5,5 +5,5 @@ package com.hyf.trade.strategy;
  * @date 2025/04/11
  */
 public interface PromptStrategy {
-    String getStrategy();
+    String getStrategy(PromptStrategyContext context);
 }

@@ -8,7 +8,7 @@ import java.util.Calendar;
  */
 public class CalendarUtil {
 
-    public static Calendar base = Calendar.getInstance();
+    private static final Calendar base = Calendar.getInstance();
 
     public static Calendar getBaseCalendar() {
         return base;

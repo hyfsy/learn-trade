@@ -1,8 +1,10 @@
 package com.hyf.trade.util;
 
 import com.hyf.trade.strategy.PromptStrategy;
+import com.hyf.trade.strategy.PromptStrategyContext;
 import com.hyf.trade.strategy.factory.PromptStrategyFactory;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +15,13 @@ import java.util.Map;
  */
 public class StrategyUtil {
 
-    public static String transformStrategy(String prompt) {
+    public static String transformStrategy(String prompt, Calendar baseCalendar) {
 
         Map<String, PromptStrategy> strategyMap = strategyMap();
 
+        PromptStrategyContext context = new PromptStrategyContext(baseCalendar);
         for (Map.Entry<String, PromptStrategy> entry : strategyMap.entrySet()) {
-            prompt = prompt.replace(entry.getKey(), entry.getValue().getStrategy());
+            prompt = prompt.replace(entry.getKey(), entry.getValue().getStrategy(context));
         }
 
         return prompt;
@@ -36,9 +39,10 @@ public class StrategyUtil {
         return map;
     }
 
-    public static void printTransformStrategyMap() {
+    public static void printTransformStrategyMap(Calendar baseCalendar) {
+        PromptStrategyContext context = new PromptStrategyContext(baseCalendar);
         strategyMap().forEach((k, v) -> {
-            System.out.println(k + ": " + v.getStrategy());
+            System.out.println(k + ": " + v.getStrategy(context));
         });
     }
 }

@@ -29,13 +29,13 @@ public class Main {
         AssertUtil.notBlank(prompt);
 
         System.out.println();
-        Calendar base = CalendarUtil.copy(CalendarUtil.base);
+        Calendar base = CalendarUtil.copy(CalendarUtil.getBaseCalendar());
         for (int i = 0; i < config.getLoop(); i++) {
             if (CalendarUtil.needSkip(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
                 continue;
             }
-            String transformedPrompt = StrategyUtil.transformStrategy(prompt);
+            String transformedPrompt = StrategyUtil.transformStrategy(prompt, base);
             System.out.println(transformedPrompt);
             base.add(Calendar.DAY_OF_YEAR, -1);
         }

@@ -12,7 +12,7 @@ public class BeforeXDayRangePromptStrategy implements PromptStrategy {
     }
 
     @Override
-    public String getStrategy() {
-        return delegate.getStrategy();
+    public String getStrategy(PromptStrategyContext context) {
+        return delegate.getStrategy(context);
     }
 }
