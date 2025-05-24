@@ -12,32 +12,28 @@ import java.io.*;
 public class ConfigUtil {
 
     private static final boolean jarMode = Boolean.getBoolean("jarMode");
-    public static String strategy;
-    public static Config config;
+    public static        Config  config;
 
-    public static String getStrategy() {
-        if (strategy == null) {
-            InputStream resource = getResource("/strategy/strategy.txt");
-            try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
-                String row;
-                StringBuilder sb = new StringBuilder();
-                while ((row = reader.readLine()) != null) {
-                    String trimmedText = row.trim();
-                    if (trimmedText.isEmpty()) {
-                        continue;
-                    }
-                    if (trimmedText.startsWith("#")) {
-                        continue;
-                    }
-                    sb.append(trimmedText).append("，");
+    public static String getStrategy(String strategyFilePath) {
+        InputStream resource = getResource(strategyFilePath);
+        try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(resource))) {
+            String row;
+            StringBuilder sb = new StringBuilder();
+            while ((row = reader.readLine()) != null) {
+                String trimmedText = row.trim();
+                if (trimmedText.isEmpty()) {
+                    continue;
                 }
-                sb.deleteCharAt(sb.length() - 1);
-                strategy = sb.toString();
-            } catch (IOException e) {
-                throw new RuntimeException("read strategy file failed");
+                if (trimmedText.startsWith("#")) {
+                    continue;
+                }
+                sb.append(trimmedText).append("，");
             }
+            sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("read strategy file failed");
         }
-        return strategy;
     }
 
     public static Config getConfig() {

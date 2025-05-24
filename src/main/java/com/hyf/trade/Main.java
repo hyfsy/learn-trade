@@ -13,18 +13,23 @@ public class Main {
     public static void main(String[] args) {
         // System.setProperty("jarMode", "true");
 
-        generateStrategy();
-        printResentSettlementDay();
-    }
-
-    private static void generateStrategy() {
-        String prompt = ConfigUtil.getStrategy();
-        AssertUtil.notBlank(prompt);
-
         Config config = ConfigUtil.getConfig();
         initBaseCalendar(config);
 
-        Calendar base = CalendarUtil.base;
+        generateStrategy(config, "/strategy/strategy.txt");
+        generateStrategy(config, "/strategy/strategy2.txt");
+
+        printResentSettlementDay();
+
+        // TradeUtil.printSettlementDaysSeparately(2024);
+    }
+
+    private static void generateStrategy(Config config, String strategyPath) {
+        String prompt = ConfigUtil.getStrategy(strategyPath);
+        AssertUtil.notBlank(prompt);
+
+        System.out.println();
+        Calendar base = CalendarUtil.copy(CalendarUtil.base);
         for (int i = 0; i < config.getLoop(); i++) {
             if (CalendarUtil.needSkip(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
