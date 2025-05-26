@@ -18,6 +18,7 @@ public class Main {
 
         generateStrategy(config, "/strategy/strategy.txt");
         generateStrategy(config, "/strategy/strategy2.txt");
+        // generateStrategy(config, "/strategy/strategy3.txt");
 
         printResentSettlementDay();
 

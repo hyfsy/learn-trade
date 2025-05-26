@@ -16,33 +16,39 @@ import java.util.stream.Collectors;
  * @author baB_hyf
  * @date 2025/04/05
  */
-public class Client {
+public class ResultTableClient {
+
+    static String m_n      = "Ths_iwencai_Xuangu";
+    static int    pageNum  = 1;
+    static int    pageSize = 50;
 
     // TODO 重要
-    static String Hexin_v = "xxx";
-    static String hash_func_32 = "xxx";
+    private String  Hexin_v      = "";
+    private String  hash_func_32 = "";
+    private boolean test_mode    = true;
 
-    static boolean test_mode = true;
-    static String m_n = "Ths_iwencai_Xuangu";
-    static String cookie_userid = null;
-    static String cookie_other_uid = m_n + "_" + hash_func_32;
-    static int pageNum = 1;
-    static int pageSize = 50;
+    private String cookie_userid    = null;
+    private String cookie_other_uid = m_n + "_" + hash_func_32;
 
-    public static void main(String[] args) {
-        String question = "";
-        List<List<String>> resultTable = getResultTable(question);
-        printResultTable(resultTable);
-        System.out.println();
+    private boolean initialized;
+
+    public void init(String Hexin_v, String hash_func_32, boolean test_mode) {
+        // requestHeader:Hexin-v
+        this.Hexin_v = Hexin_v;
+        // requestCookie:other_uid=Ths_iwencai_Xuangu_hash_func_32
+        this.hash_func_32 = hash_func_32;
+        this.test_mode = test_mode;
+        this.initialized = true;
     }
 
-    public static List<List<String>> getResultTable(String question) {
+    public ResultTable createResultTable(String question) {
         if (question == null || question.isEmpty() || question.trim().isEmpty()) {
             throw new IllegalStateException("question is empty");
         }
+        checkInitialized();
         String url = "https://www.iwencai.com/customized/chart/get-robot-data";
         String rsh = cookie_userid == null ? cookie_other_uid : cookie_userid;
-        String body = "{\"source\":\"" + m_n + "\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"" + question + "\",\"perpage\":"+ pageSize + ",\"page\":" + pageNum + ",\"secondary_intent\":\"stock\",\"log_info\":\"{\\\"input_type\\\":\\\"typewrite\\\"}\",\"rsh\":\"" + rsh + "\"}";
+        String body = "{\"source\":\"" + m_n + "\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"" + question + "\",\"perpage\":" + pageSize + ",\"page\":" + pageNum + ",\"secondary_intent\":\"stock\",\"log_info\":\"{\\\"input_type\\\":\\\"typewrite\\\"}\",\"rsh\":\"" + rsh + "\"}";
         Map<String, String> headers = new HashMap<>();
         headers.put("Origin", "https://www.iwencai.com");
         headers.put("Referer", "https://www.iwencai.com");
@@ -50,7 +56,7 @@ public class Client {
         try {
             String json = null;
             if (test_mode) {
-                json = HttpClient.readAsString(Client.class.getResourceAsStream("/a.json"));
+                json = HttpClient.readAsString(ResultTableClient.class.getResourceAsStream("/a.json"));
             }
             else {
                 json = HttpClient.postString(url, body, headers);
@@ -87,21 +93,20 @@ public class Client {
                 }
                 table.add(row);
             }
-            return table;
+            return new ResultTable(table);
         } catch (IOException e) {
             throw new RuntimeException("getResultTable failed", e);
         }
     }
 
-    private static void printResultTable(List<List<String>> resultTable) {
-        System.out.println();
-        for (List<String> stringList : resultTable) {
-            System.out.println(stringList);
-        }
-    }
+    // public void login() {
+    //     cookie_userid = "xxx";
+    // }
 
-    public static void login() {
-        cookie_userid = "xxx";
+    private void checkInitialized() {
+        if (!initialized) {
+            throw new IllegalStateException("Not initialized");
+        }
     }
 
     private static class Column {
