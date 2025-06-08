@@ -33,6 +33,12 @@ public class ResultTableClient {
     private boolean initialized;
 
     public void init(String Hexin_v, String hash_func_32, boolean test_mode) {
+        if (Hexin_v == null || Hexin_v.isEmpty()) {
+            throw new IllegalArgumentException("Hexin_v is empty");
+        }
+        if (hash_func_32 == null || hash_func_32.isEmpty()) {
+            throw new IllegalArgumentException("hash_func_32 is empty");
+        }
         // requestHeader:Hexin-v
         this.Hexin_v = Hexin_v;
         // requestCookie:other_uid=Ths_iwencai_Xuangu_hash_func_32
@@ -61,7 +67,12 @@ public class ResultTableClient {
             else {
                 json = HttpClient.postString(url, body, headers);
             }
-            JSONObject jsonObject = JSON.parseObject(json);
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = JSON.parseObject(json);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Hexin_v 参数过期", e);
+            }
             JSONObject data = jsonObject.getJSONObject("data");
             JSONArray answer = data.getJSONArray("answer");
             JSONObject o1 = answer.getJSONObject(0);
