@@ -2,7 +2,7 @@ package com.hyf.trade;
 
 import com.hyf.trade.util.*;
 
-import java.util.Calendar;
+import java.util.*;
 
 /**
  * @author baB_hyf
@@ -18,11 +18,12 @@ public class Main {
 
         generateStrategy(config, "/strategy/strategy.txt");
         generateStrategy(config, "/strategy/strategy2.txt");
-        generateStrategy(config, "/strategy/strategy3.txt");
+        generateStrategy(config, "/strategy/strategy4.txt");
+        generateStrategy(config, "/strategy/strategy5.txt");
 
         printResentSettlementDay();
 
-        // TradeUtil.printSettlementDaysSeparately(2024);
+        // TradeUtil.printSettlementDays(2025);
     }
 
     private static void generateStrategy(Config config, String strategyPath) {
@@ -58,9 +59,16 @@ public class Main {
         Calendar calendar = Calendar.getInstance();
         for (int i = 0; i < 7; i++) {
             int year = calendar.get(Calendar.YEAR);
-            boolean settlementDay = TradeUtil.isSettlementDay(year, calendar);
-            if (settlementDay) {
-                System.out.println("[" + CalendarUtil.to_yyyy_MM_dd(calendar) + "] is settlement day");
+            Map<String, List<String>> settlementDayMaps = TradeUtil.getSettlementDayMaps(year);
+            String yyyy_mm_dd = CalendarUtil.to_yyyy_MM_dd(calendar);
+            List<String> names = new ArrayList<>();
+            for (Map.Entry<String, List<String>> entry : settlementDayMaps.entrySet()) {
+                if (entry.getValue().contains(yyyy_mm_dd)) {
+                    names.add(entry.getKey());
+                }
+            }
+            if (!names.isEmpty()) {
+                System.out.println("[" + yyyy_mm_dd + "] is settlement day: " + names);
             }
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }

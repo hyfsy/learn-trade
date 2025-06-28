@@ -1,5 +1,6 @@
 package com.hyf.trade.util;
 
+import com.hyf.trade.strategy.Compactor;
 import com.hyf.trade.strategy.PromptStrategy;
 import com.hyf.trade.strategy.PromptStrategyContext;
 import com.hyf.trade.strategy.factory.PromptStrategyFactory;
@@ -23,6 +24,8 @@ public class StrategyUtil {
         for (Map.Entry<String, PromptStrategy> entry : strategyMap.entrySet()) {
             prompt = prompt.replace(entry.getKey(), entry.getValue().getStrategy(context));
         }
+
+        prompt = Compactor.compact(prompt);
 
         return prompt;
     }

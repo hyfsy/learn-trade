@@ -21,6 +21,23 @@ public class TradeUtil {
         return getSettlementDays(year).contains(yyyyMMdd);
     }
 
+    public static Map<String, List<String>> getSettlementDayMaps(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+
+        Map<String, List<String>> settlementDayMaps = new LinkedHashMap<>();
+
+        List<SettlementDayStrategy> strategies = SettlementDayStrategy.getStrategies();
+        for (SettlementDayStrategy strategy : strategies) {
+            List<String> settlementDays = strategy.getSettlementDays(CalendarUtil.copy(calendar));
+            settlementDays.removeAll(ConfigUtil.getConfig().getHoliday());
+            settlementDays.removeAll(ConfigUtil.getConfig().getBlack());
+            settlementDayMaps.put(strategy.getName(), settlementDays);
+        }
+
+        return settlementDayMaps;
+    }
+
     public static List<String> getSettlementDays(int year) {
 
         Calendar calendar = Calendar.getInstance();

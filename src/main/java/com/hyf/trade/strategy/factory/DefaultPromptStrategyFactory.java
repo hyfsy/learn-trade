@@ -16,10 +16,12 @@ public class DefaultPromptStrategyFactory implements PromptStrategyFactory {
     @Override
     public Map<String, PromptStrategy> build() {
         Map<String, PromptStrategy> map = new LinkedHashMap<>();
-        map.put("当前交易日", new BeforeXDayPromptStrategy(0));
+        map.put("上上上上上个交易日", new BeforeXDayPromptStrategy(5));
+        map.put("上上上上个交易日", new BeforeXDayPromptStrategy(4));
         map.put("上上上个交易日", new BeforeXDayPromptStrategy(3));
         map.put("上上个交易日", new BeforeXDayPromptStrategy(2));
         map.put("上个交易日", new BeforeXDayPromptStrategy(1));
+        map.put("当前交易日", new BeforeXDayPromptStrategy(0));
         map.put("前三个交易日", new BeforeXDayRangePromptStrategy(3));
         map.put("前五个交易日", new BeforeXDayRangePromptStrategy(5));
         map.put("前十个交易日", new BeforeXDayRangePromptStrategy(10));
