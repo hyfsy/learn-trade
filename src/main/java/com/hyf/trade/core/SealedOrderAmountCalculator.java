@@ -11,6 +11,12 @@ import java.util.*;
 
 /**
  * 第二天的一字封单计算
+ * <p>
+ * (2)
+ * 量化涨停封单：
+ * 这个一般来说可能很多兄弟们都不太了解，直接看流通Z即可，1亿对应1万手，封单大于10倍的一字封单视为超预期有效，十足定方向。
+ * 普通涨停板收盘时能有3倍是正常，次日有溢价预期；大于5倍明天就是加速预期的走势。
+ * 举个例子，下图中（2025.3.6）云鼎科技的流通Z为3.58亿，周四封单位13.3万手，接近三倍的封单，理应有3%-6%的溢价。
  *
  * @author baB_hyf
  * @date 2025/06/29
@@ -31,29 +37,6 @@ public class SealedOrderAmountCalculator {
             System.out.println("近期抛压(亿): " + result.getSellPressure().toPlainString());
         }
         System.out.println();
-    }
-
-    public static class SealedOrderAmountCalcParam {
-        private Calendar              currentCalendar                               = Calendar.getInstance();
-        // 股票名称 -> 近期最大一天的成交量，如xx万
-        private Map<String, String> stockNameAndRecentMaxSellPressureVolumeMap = new LinkedHashMap<>();
-        public SealedOrderAmountCalcParam add(String stockName, String recentMaxSellPressureVolume) {
-            stockNameAndRecentMaxSellPressureVolumeMap.put(stockName, recentMaxSellPressureVolume);
-            return this;
-        }
-
-        public Calendar getCurrentCalendar() {
-            return currentCalendar;
-        }
-
-        public SealedOrderAmountCalcParam setCurrentCalendar(Calendar currentCalendar) {
-            this.currentCalendar = currentCalendar;
-            return this;
-        }
-
-        public Map<String, String> getStockNameAndRecentMaxSellPressureVolumeMap() {
-            return stockNameAndRecentMaxSellPressureVolumeMap;
-        }
     }
 
     public static List<Result> calc(SealedOrderAmountCalcParam param) {
@@ -113,26 +96,73 @@ public class SealedOrderAmountCalculator {
         return results;
     }
 
+    public static enum StockType {
+        MAIN_BOARD(10), // 主板
+        GROWTH_ENTERPRISE_MARKET(20), // 创业板
+        STAR_MARKET(20), // 科创板
+        BEIJING_STOCK_EXCHANGE(30), // 北交所
+        ;
+
+        int amplitude; // 幅度
+
+        StockType(int amplitude) {
+            this.amplitude = amplitude;
+        }
+
+        public int getAmplitude() {
+            return amplitude;
+        }
+    }
+
     // private BigDecimal calcLimitUpAmount(BigDecimal currentAmount, StockType stockType) {
     //
     // }
 
+    public static class SealedOrderAmountCalcParam {
+        private Calendar            currentCalendar                            = Calendar.getInstance();
+        // 股票名称 -> 近期最大一天的成交量，如xx万
+        private Map<String, String> stockNameAndRecentMaxSellPressureVolumeMap = new LinkedHashMap<>();
+
+        public SealedOrderAmountCalcParam add(String stockName, String recentMaxSellPressureVolume) {
+            stockNameAndRecentMaxSellPressureVolumeMap.put(stockName, recentMaxSellPressureVolume);
+            return this;
+        }
+
+        public Calendar getCurrentCalendar() {
+            return currentCalendar;
+        }
+
+        public SealedOrderAmountCalcParam setCurrentCalendar(Calendar currentCalendar) {
+            this.currentCalendar = currentCalendar;
+            return this;
+        }
+
+        public Map<String, String> getStockNameAndRecentMaxSellPressureVolumeMap() {
+            return stockNameAndRecentMaxSellPressureVolumeMap;
+        }
+    }
+
     public static class StockNumber {
-        private int round_mode = BigDecimal.ROUND_HALF_UP;
-        private int tail_num = 2;
         private final BigDecimal number;
+        private       int        round_mode = BigDecimal.ROUND_HALF_UP;
+        private       int        tail_num   = 2;
+
         private StockNumber(BigDecimal number) {
             this.number = number;
         }
+
         public static StockNumber of(long number) {
             return of(parse(String.valueOf(number)));
         }
+
         public static StockNumber of(String number) {
             return of(parse(number));
         }
+
         public static StockNumber of(BigDecimal number) {
             return new StockNumber(number);
         }
+
         private static BigDecimal parse(String number) {
 
             Unit[] values = Unit.values();
@@ -193,7 +223,7 @@ public class SealedOrderAmountCalculator {
             HUNDRED_MILLION_HAND("亿手", 10),
             ;
             String name;
-            int shift;
+            int    shift;
 
             Unit(String name, int shift) {
                 this.name = name;
@@ -204,7 +234,7 @@ public class SealedOrderAmountCalculator {
 
     public static class Result {
 
-        private String stockName;
+        private String     stockName;
         private BigDecimal expectedSealedOrderAmount;
         private BigDecimal sellPressure;
 
@@ -230,24 +260,6 @@ public class SealedOrderAmountCalculator {
 
         public void setSellPressure(BigDecimal sellPressure) {
             this.sellPressure = sellPressure;
-        }
-    }
-
-    public static enum StockType {
-        MAIN_BOARD(10), // 主板
-        GROWTH_ENTERPRISE_MARKET(20), // 创业板
-        STAR_MARKET(20), // 科创板
-        BEIJING_STOCK_EXCHANGE(30), // 北交所
-        ;
-
-        int amplitude; // 幅度
-
-        StockType(int amplitude) {
-            this.amplitude = amplitude;
-        }
-
-        public int getAmplitude() {
-            return amplitude;
         }
     }
 }
