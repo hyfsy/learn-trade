@@ -9,16 +9,11 @@ import java.util.stream.Collectors;
  */
 public class ResultTableClientTest {
 
-    static String Hexin_v      = "";
-    static String hash_func_32 = "eughhwmopqt3vc64hy7rlvuzvljhnfwk";
     static String question     = "当前交易日竞价涨幅大于等于2%小于等于5%，前二十个交易日内有涨停，当前交易日涨跌幅排序，所属概念板块";
 
     public static void main(String[] args) {
-        if (Hexin_v == null || Hexin_v.isEmpty()) {
-            throw new IllegalArgumentException("Hexin_v is empty");
-        }
-        ResultTableClient client = new ResultTableClient();
-        client.init(Hexin_v, hash_func_32, false);
+
+        ResultTableClient client = ResultTableClient.getReal();
 
         ResultTable resultTable = client.createResultTable(question);
         resultTable.print();

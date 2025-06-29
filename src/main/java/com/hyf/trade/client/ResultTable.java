@@ -71,6 +71,26 @@ public class ResultTable {
         return stocks.get(rowIndex);
     }
 
+    public Stock getStockByCode(String code) {
+        List<Stock> stocks = getStocks();
+        for (Stock stock : stocks) {
+            if (stock.code.contains(code)) { // 00xxxx.SZ
+                return stock;
+            }
+        }
+        return null;
+    }
+
+    public Stock getStockByName(String name) {
+        List<Stock> stocks = getStocks();
+        for (Stock stock : stocks) {
+            if (stock.name.equals(name)) {
+                return stock;
+            }
+        }
+        return null;
+    }
+
     public void forEachRow(RowHandler rowHandler) {
         for (int i = 0; i < cellData.size(); i++) {
             rowHandler.process(i, mapToValue(cellData.get(i)));
@@ -145,16 +165,24 @@ public class ResultTable {
 
     public static class Stock {
 
+        public  int                 rowIndex;
+        public  String              code;
+        public  String              name;
         private Map<String, String> stockData;
-        public int                 rowIndex;
-        public String              stockCode;
-        public String              stockName;
 
         public Stock(int rowIndex, Map<String, String> stockData) {
             this.rowIndex = rowIndex;
             this.stockData = stockData;
-            this.stockCode = stockData.get("股票代码");
-            this.stockName = stockData.get("股票简称");
+            this.code = stockData.get("股票代码"); // 00xxxx.SZ
+            this.name = stockData.get("股票简称");
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public String getValue(String column) {

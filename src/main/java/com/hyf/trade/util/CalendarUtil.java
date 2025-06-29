@@ -1,6 +1,9 @@
 package com.hyf.trade.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author baB_hyf
@@ -49,6 +52,46 @@ public class CalendarUtil {
 
     public static String to_yyyy_MM_dd(Calendar calendar) {
         return calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public static String to_simple_yyyy_MM_dd(Calendar calendar) {
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        String date = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        month = month.length() == 1 ? "0" + month : month;
+        date = date.length() == 1 ? "0" + date : date;
+        return year + month + date;
+    }
+
+    public static Calendar parse_yyyy_MM_dd(String yyyy_MM_dd) {
+        String[] yyyy_MM_dd_array = yyyy_MM_dd.split("\\.");
+        if (yyyy_MM_dd_array.length != 3) {
+            throw new IllegalArgumentException(yyyy_MM_dd);
+        }
+
+        int year = Integer.parseInt(yyyy_MM_dd_array[0]);
+        int month = Integer.parseInt(yyyy_MM_dd_array[1]) - 1;
+        int date = Integer.parseInt(yyyy_MM_dd_array[2]);
+
+        Calendar instance = Calendar.getInstance();
+        instance.set(Calendar.YEAR, year);
+        instance.set(Calendar.MONTH, month);
+        instance.set(Calendar.DAY_OF_MONTH, date);
+
+        return instance;
+    }
+
+    public static Calendar parse_simple_yyyy_MM_dd(String simple_yyyy_MM_dd) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        Date date = null;
+        try {
+            date = format.parse(simple_yyyy_MM_dd);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(simple_yyyy_MM_dd);
+        }
+        Calendar instance = Calendar.getInstance();
+        instance.setTime(date);
+        return instance;
     }
 
     public static int max(String day, String another) {

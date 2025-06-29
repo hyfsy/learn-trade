@@ -26,6 +26,7 @@ public class DefaultPromptStrategyFactory implements PromptStrategyFactory {
         map.put("前五个交易日", new BeforeXDayRangePromptStrategy(5));
         map.put("前十个交易日", new BeforeXDayRangePromptStrategy(10));
         map.put("前二十个交易日", new BeforeXDayRangePromptStrategy(20));
+        map.put("后一个交易日", new AfterXDayRangePromptStrategy(1));
         map.put("后五个交易日", new AfterXDayRangePromptStrategy(5));
         return map;
     }

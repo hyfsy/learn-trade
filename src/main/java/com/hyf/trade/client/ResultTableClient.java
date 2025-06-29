@@ -4,6 +4,7 @@ package com.hyf.trade.client;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hyf.trade.constant.ResultTableConstant;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class ResultTableClient {
     static String m_n      = "Ths_iwencai_Xuangu";
     static int    pageNum  = 1;
     static int    pageSize = 50;
-
+    private static ResultTableClient instance;
     // TODO 重要
     private String  Hexin_v      = "";
     private String  hash_func_32 = "";
@@ -32,7 +33,27 @@ public class ResultTableClient {
 
     private boolean initialized;
 
-    public void init(String Hexin_v, String hash_func_32, boolean test_mode) {
+    private ResultTableClient() {
+    }
+
+    public static ResultTableClient getTest() {
+        return getInstance(true);
+    }
+
+    public static ResultTableClient getReal() {
+        return getInstance(false);
+    }
+
+    private static ResultTableClient getInstance(boolean test_mode) {
+        if (instance == null) {
+            ResultTableClient client = new ResultTableClient();
+            client.init(ResultTableConstant.Hexin_v, ResultTableConstant.hash_func_32, test_mode);
+            instance = client;
+        }
+        return instance;
+    }
+
+    private void init(String Hexin_v, String hash_func_32, boolean test_mode) {
         if (Hexin_v == null || Hexin_v.isEmpty()) {
             throw new IllegalArgumentException("Hexin_v is empty");
         }
