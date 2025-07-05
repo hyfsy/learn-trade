@@ -1,5 +1,6 @@
 package com.hyf.trade;
 
+import com.hyf.trade.core.SealedOrderAmountCalculator;
 import com.hyf.trade.util.*;
 
 import java.util.*;
@@ -22,6 +23,11 @@ public class Main {
         generateStrategy(config, "/strategy/strategy5.txt");
 
         printResentSettlementDay();
+
+        // 2025.7.2
+        // calcSealedOrderAmount(CalendarUtil.parse_yyyy_MM_dd("2025.7.1"),
+        //         "诚邦股份", "47.49万"
+        // );
 
         // TradeUtil.printSettlementDays(2025);
     }
@@ -72,5 +78,22 @@ public class Main {
             }
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
+    }
+
+    private static void calcSealedOrderAmount(Calendar calendar, String... interestedStockParam) {
+        SealedOrderAmountCalculator.SealedOrderAmountCalcParam param = new SealedOrderAmountCalculator.SealedOrderAmountCalcParam();
+        param.setCurrentCalendar(calendar);
+
+        if (interestedStockParam.length % 2 != 0) {
+            throw new IllegalArgumentException(Arrays.toString(interestedStockParam));
+        }
+
+        for (int i = 0; i < interestedStockParam.length - 1;) {
+            param.add(interestedStockParam[i], interestedStockParam[i + 1]);
+            i += 2;
+        }
+        List<SealedOrderAmountCalculator.Result> results = SealedOrderAmountCalculator.calc(param);
+        SealedOrderAmountCalculator.print(results);
+        System.out.println();
     }
 }

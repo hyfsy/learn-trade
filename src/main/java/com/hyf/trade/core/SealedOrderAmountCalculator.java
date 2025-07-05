@@ -30,25 +30,22 @@ public class SealedOrderAmountCalculator {
         param.add("岩山科技", "1880万");
         param.add("云鼎科技", "162万");
         List<Result> results = calc(param);
-        for (Result result : results) {
-            System.out.println("====================");
-            System.out.println("股票名称：" + result.getStockName());
-            System.out.println("预期封单(亿): " + result.getExpectedSealedOrderAmount().toPlainString());
-            System.out.println("近期抛压(亿): " + result.getSellPressure().toPlainString());
-        }
+        print(results);
         System.out.println();
     }
 
     public static List<Result> calc(SealedOrderAmountCalcParam param) {
 
         // 当天晚上进行计算，计算第二天一字封单
-        String question = "当前交易日涨停，当前交易日成交量，当前交易日收盘价，后一个交易日涨停价，当前交易日时5日vol，当前交易日时10日vol";
+        String question = "当前交易日涨停，当前交易日成交量，当前交易日收盘价，当前交易日时5日vol，当前交易日时10日vol";
         question = StrategyUtil.transformStrategy(question, param.getCurrentCalendar());
 
         ResultTableClient client = ResultTableClient.getReal();
         ResultTable resultTable = client.createResultTable(question);
 
         List<Result> results = new ArrayList<>();
+
+        // TODO 支持获取所有的数据
 
         for (Map.Entry<String, String> entry : param.getStockNameAndRecentMaxSellPressureVolumeMap().entrySet()) {
             String stockName = entry.getKey();
@@ -66,17 +63,13 @@ public class SealedOrderAmountCalculator {
             }
 
             String yyyy_mm_dd = CalendarUtil.to_simple_yyyy_MM_dd(param.getCurrentCalendar());
-            Calendar nextDay = CalendarUtil.copy(param.getCurrentCalendar());
-            nextDay.add(Calendar.DAY_OF_YEAR, 1);
-            String next_yyyy_mm_dd = CalendarUtil.to_simple_yyyy_MM_dd(nextDay);
-
             StockNumber closePrice = StockNumber.of(stock.getValue("收盘价:不复权[" + yyyy_mm_dd + "]"));
             StockNumber volume = StockNumber.of(stock.getValue("成交量[" + yyyy_mm_dd + "]"));
             StockNumber vol_5 = StockNumber.of(stock.getValue("5日vol[" + yyyy_mm_dd + "]"));
             StockNumber vol_10 = StockNumber.of(stock.getValue("10日vol[" + yyyy_mm_dd + "]"));
             StockNumber recentMaxSellPressureVolumeU = StockNumber.of(recentMaxSellPressureVolume);
+            StockNumber nextLimitUpAmount = calcLimitUpAmount(StockType.get(stock), closePrice);
 
-            StockNumber nextLimitUpAmount = StockNumber.of(stock.getValue("涨停价[" + next_yyyy_mm_dd + "]"));
             StockNumber nextSealedOrderAmount = nextLimitUpAmount.multiply(volume);
             StockNumber vol5SealedOrderAmount = nextLimitUpAmount.multiply(vol_5);
             StockNumber vol10SealedOrderAmount = nextLimitUpAmount.multiply(vol_10);
@@ -96,11 +89,27 @@ public class SealedOrderAmountCalculator {
         return results;
     }
 
+    public static void print(List<Result> results) {
+        for (Result result : results) {
+            System.out.println("====================");
+            System.out.println("股票名称：" + result.getStockName());
+            System.out.println("预期封单(亿): " + result.getExpectedSealedOrderAmount().toPlainString());
+            System.out.println("近期抛压(亿): " + result.getSellPressure().toPlainString());
+        }
+    }
+
     public static enum StockType {
-        MAIN_BOARD(10), // 主板
+        MAIN_BOARD_SH(10), // 主板
+        MAIN_BOARD_SZ(10), // 主板
         GROWTH_ENTERPRISE_MARKET(20), // 创业板
         STAR_MARKET(20), // 科创板
         BEIJING_STOCK_EXCHANGE(30), // 北交所
+
+        ST_MAIN_BOARD_SH(10 / 2), // 主板
+        ST_MAIN_BOARD_SZ(10 / 2), // 主板
+        ST_GROWTH_ENTERPRISE_MARKET(20 / 2), // 创业板
+        ST_STAR_MARKET(20 / 2), // 科创板
+        ST_BEIJING_STOCK_EXCHANGE(30 / 2), // 北交所
         ;
 
         int amplitude; // 幅度
@@ -112,11 +121,40 @@ public class SealedOrderAmountCalculator {
         public int getAmplitude() {
             return amplitude;
         }
+
+        public static StockType get(ResultTable.Stock stock) {
+            if (stock == null) {
+                return null;
+            }
+            String stockCode = stock.getCode();
+            boolean st = stock.isSpecialTreatment();
+            if (stockCode.startsWith("60")) {
+                return st ? ST_MAIN_BOARD_SH : MAIN_BOARD_SH;
+            }
+            if (stockCode.startsWith("00")) {
+                return st ? ST_MAIN_BOARD_SZ : MAIN_BOARD_SZ;
+            }
+            if (stockCode.startsWith("300")) {
+                return st ? ST_GROWTH_ENTERPRISE_MARKET : GROWTH_ENTERPRISE_MARKET;
+            }
+            if (stockCode.startsWith("688")) {
+                return st ? ST_STAR_MARKET : STAR_MARKET;
+            }
+            if (stockCode.startsWith("8") || stockCode.startsWith("920")) {
+                return st ? ST_BEIJING_STOCK_EXCHANGE : BEIJING_STOCK_EXCHANGE;
+            }
+            // TODO 兜底北交所
+            return st ? ST_BEIJING_STOCK_EXCHANGE : BEIJING_STOCK_EXCHANGE;
+        }
     }
 
-    // private BigDecimal calcLimitUpAmount(BigDecimal currentAmount, StockType stockType) {
-    //
-    // }
+    private static StockNumber calcLimitUpAmount(StockType stockType, StockNumber currentAmount) {
+        double amplitude = stockType.getAmplitude() / 100D;
+        // 最大涨幅，四舍五入，保留两位
+        StockNumber increaseAmount = currentAmount.multiply(StockNumber.of(new BigDecimal(amplitude)));
+        increaseAmount.setTailNumber(currentAmount.getTailNumber()).setRoundMode(currentAmount.getRoundMode());
+        return currentAmount.add(increaseAmount);
+    }
 
     public static class SealedOrderAmountCalcParam {
         private Calendar            currentCalendar                            = Calendar.getInstance();
@@ -144,8 +182,8 @@ public class SealedOrderAmountCalculator {
 
     public static class StockNumber {
         private final BigDecimal number;
-        private       int        round_mode = BigDecimal.ROUND_HALF_UP;
-        private       int        tail_num   = 2;
+        private       int        roundMode  = BigDecimal.ROUND_HALF_UP;
+        private       int        tailNumber = 2;
 
         private StockNumber(BigDecimal number) {
             this.number = number;
@@ -193,20 +231,30 @@ public class SealedOrderAmountCalculator {
             return of(get().divide(number.get(), MathContext.DECIMAL64));
         }
 
-        public void setTail_num(int tail_num) {
-            this.tail_num = tail_num;
+        public int getRoundMode() {
+            return roundMode;
         }
 
-        public void setRound_mode(int round_mode) {
-            this.round_mode = round_mode;
+        public StockNumber setRoundMode(int roundMode) {
+            this.roundMode = roundMode;
+            return this;
+        }
+
+        public int getTailNumber() {
+            return tailNumber;
+        }
+
+        public StockNumber setTailNumber(int tailNumber) {
+            this.tailNumber = tailNumber;
+            return this;
         }
 
         public BigDecimal get() {
-            return number.setScale(tail_num, round_mode);
+            return number.setScale(tailNumber, roundMode);
         }
 
         public BigDecimal get(Unit unit) {
-            return number.movePointLeft(unit.shift).setScale(tail_num, round_mode);
+            return number.movePointLeft(unit.shift).setScale(tailNumber, roundMode);
         }
 
         @Override

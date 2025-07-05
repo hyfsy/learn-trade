@@ -173,7 +173,8 @@ public class ResultTable {
         public Stock(int rowIndex, Map<String, String> stockData) {
             this.rowIndex = rowIndex;
             this.stockData = stockData;
-            this.code = stockData.get("股票代码"); // 00xxxx.SZ
+            String code = stockData.get("股票代码"); // xx.SZ
+            this.code = code.substring(0, code.indexOf("."));
             this.name = stockData.get("股票简称");
         }
 
@@ -187,6 +188,11 @@ public class ResultTable {
 
         public String getValue(String column) {
             return stockData.get(column);
+        }
+
+        public boolean isSpecialTreatment() {
+            String name = getName();
+            return name.startsWith("ST") || name.startsWith("*ST") ||name.startsWith("**ST");
         }
     }
 }

@@ -21,7 +21,7 @@ public class ResultTableClient {
 
     static String m_n      = "Ths_iwencai_Xuangu";
     static int    pageNum  = 1;
-    static int    pageSize = 50;
+    static int    pageSize = 100;
     private static ResultTableClient instance;
     // TODO 重要
     private String  Hexin_v      = "";
