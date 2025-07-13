@@ -15,6 +15,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.github.hyfsy</groupId>
+            <artifactId>hot-refresh-core</artifactId>
+            <version>1.2.5</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.83_noneautotype</version>

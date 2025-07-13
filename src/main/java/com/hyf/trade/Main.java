@@ -24,9 +24,10 @@ public class Main {
 
         printResentSettlementDay();
 
-        // 2025.7.2
-        // calcSealedOrderAmount(CalendarUtil.parse_yyyy_MM_dd("2025.7.1"),
-        //         "诚邦股份", "47.49万"
+        // Calendar calendar = Calendar.getInstance();
+        // // calendar = CalendarUtil.parse_yyyy_MM_dd("2025.7.1");
+        // calcSealedOrderAmount(calendar,
+        //         "哈三联", "62.41万"
         // );
 
         // TradeUtil.printSettlementDays(2025);
