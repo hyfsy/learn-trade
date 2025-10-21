@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+
+<style>
+    .table-border {
+        border: dashed;
+    }
+    .border {
+        padding: 10px;
+        /*border: 1px black dashed;*/
+    }
+
+    .no-need-schedule {
+        color: #e7e6e6;
+    }
+    .need-schedule {
+        font-weight: bold;
+    }
+
+    .date {
+        cursor: grabbing;
+        -moz-user-select:none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -khtml-user-selece:none;
+        /*上面都是兼容性问题，具体看浏览器版本或什么浏览器*/
+        user-select: none;
+    }
+    .cursor {
+        background: red;
+    }
+    .title-month {
+        font-weight: bold;
+        color: blue;
+    }
+    .current-day {
+        padding: 9px;
+        border: dashed 1px orange;
+    }
+    .holiday {
+        padding: 9px;
+        border: dashed 1px grey;
+    }
+    .settlement-day {
+        color: red;
+    }
+    .config-text-area {
+        width: 1120px;
+        height: 20px;
+    }
+    .module-selected {
+        color: red;
+    }
+    .hidden {
+        display: none;
+    }
+    .table-row-selected {
+        background: lightblue;
+    }
+    .module-holiday-selected {
+        color: orange;
+    }
+</style>
+<body>
+
+<div id="settlement-day">
+    <input id="getMonthPrev" type="button" value="上一月"/>
+    <!--<span id="title-month"></span>-->
+    <input id="getMonthNext" type="button" value="下一月"/>
+    <div id="month"></div>
+</div>
+
+<div id="operator">
+    <div id="module-list">
+        <span id="module-execute" class="module">执行</span>
+        <span id="module-strategy" class="module">策略</span>
+        <span id="module-replacer" class="module">文本替换</span>
+        <span id="module-holiday" class="module">节日</span>
+    </div>
+    <div id="button-list">
+        <div id="button-execute-strategy" class="button-list hidden">
+            <input id="button-execute-confirm" type="button" value="执行"/>
+            <input id="button-execute-list" type="button" value="列表"/>
+        </div>
+        <div id="button-list-strategy" class="button-list hidden">
+            <input id="button-strategy-add" type="button" value="新增"/>
+            <input id="button-strategy-update" type="button" value="修改"/>
+            <input id="button-strategy-delete" type="button" value="删除"/>
+            <input id="button-strategy-get" type="button" value="详情"/>
+            <input id="button-strategy-list" type="button" value="列表"/>
+        </div>
+        <div id="button-list-replacer" class="button-list hidden">
+            <input id="button-replacer-add" type="button" value="新增"/>
+            <input id="button-replacer-update" type="button" value="修改"/>
+            <input id="button-replacer-delete" type="button" value="删除"/>
+            <input id="button-replacer-get" type="button" value="详情"/>
+            <input id="button-replacer-list" type="button" value="列表"/>
+        </div>
+        <div id="button-list-holiday" class="button-list hidden">
+<!--            <input id="button-holiday-add" type="button" value="新增"/>-->
+<!--            <input id="button-holiday-get" type="button" value="详情"/>-->
+            <input id="button-holiday-list" type="button" value="列表"/>
+        </div>
+    </div>
+
+    <div id="table-list">
+        <div id="table-list-strategy">
+            <div id="table-list-strategy-add" class="table-list hidden">
+                名称：<input id="table-list-strategy-add-name" class="show-module-refresh" type="text"/>
+                问题：<input id="table-list-strategy-add-question" class="show-module-refresh" type="text"/>
+                <input id="table-list-strategy-add-confirm" type="button" value="确定"/>
+                <input id="table-list-strategy-add-cancel" type="button" value="取消"/>
+            </div>
+            <div id="table-list-strategy-update" class="table-list hidden">
+                <input id="table-list-strategy-update-id" type="hidden"/>
+                名称：<input id="table-list-strategy-update-name" class="show-module-refresh" type="text"/>
+                问题：<input id="table-list-strategy-update-question" class="show-module-refresh" type="text"/>
+                <input id="table-list-strategy-update-confirm" type="button" value="确定"/>
+                <input id="table-list-strategy-update-cancel" type="button" value="取消"/>
+            </div>
+            <div id="table-list-strategy-get" class="table-list hidden">
+                <input id="table-list-strategy-get-id" type="hidden"/>
+                名称：<input id="table-list-strategy-get-name" class="show-module-refresh" type="text" readonly/>
+                问题：<input id="table-list-strategy-get-question" class="show-module-refresh" type="text" readonly/>
+            </div>
+            <div id="table-list-strategy-list" class="table-list hidden">
+                名称：<input id="table-list-strategy-list-name" class="show-module-refresh" type="text"/>
+                页数：<input id="table-list-strategy-list-pageNum" class="show-module-refresh" type="text" value="1"/>
+                每页大小：<input id="table-list-strategy-list-pageSize" class="show-module-refresh" type="text" value="50"/>
+                <input id="table-list-strategy-list-confirm" type="button" value="查询"/>
+                <div id="table-list-strategy-list-table"></div>
+            </div>
+        </div>
+        <div id="table-list-replacer">
+            <div id="table-list-replacer-add" class="table-list hidden">
+                文本：<input id="table-list-replacer-add-text" class="show-module-refresh" type="text" readonly/>
+                类名：
+<!--                <input id="table-list-replacer-add-class-name" class="show-module-refresh" type="text" readonly/>-->
+                <select id="table-list-replacer-add-class-name-select"></select>
+                参数：<input id="table-list-replacer-add-params" class="show-module-refresh" type="text" readonly/>
+                序号：<input id="table-list-replacer-add-order" class="show-module-refresh" type="text" readonly/>
+                <input id="table-list-replacer-add-confirm" type="button" value="确定"/>
+                <input id="table-list-replacer-add-cancel" type="button" value="取消"/>
+            </div>
+            <div id="table-list-replacer-update" class="table-list hidden">
+                <input id="table-list-replacer-update-id" type="hidden"/>
+                文本：<input id="table-list-replacer-update-text" class="show-module-refresh" type="text" readonly/>
+                类名：
+<!--                <input id="table-list-replacer-update-class-name" class="show-module-refresh" type="op" readonly/>-->
+                <select id="table-list-replacer-update-class-name-select"></select>
+                参数：<input id="table-list-replacer-update-params" class="show-module-refresh" type="text" readonly/>
+                序号：<input id="table-list-replacer-update-order" class="show-module-refresh" type="text" readonly/>
+                <input id="table-list-replacer-update-embedded" type="hidden"/>
+                <input id="table-list-replacer-update-confirm" type="button" value="确定"/>
+                <input id="table-list-replacer-update-cancel" type="button" value="取消"/>
+            </div>
+            <div id="table-list-replacer-get" class="table-list hidden">
+                <input id="table-list-replacer-get-id" type="hidden"/>
+                文本：<input id="table-list-replacer-get-text" class="show-module-refresh" type="text" readonly/>
+                类名：<input id="table-list-replacer-get-class-name" class="show-module-refresh" type="op" readonly/>
+                参数：<input id="table-list-replacer-get-params" class="show-module-refresh" type="text" readonly/>
+                序号：<input id="table-list-replacer-get-order" class="show-module-refresh" type="text" readonly/>
+                内置：<input id="table-list-replacer-get-embedded" class="show-module-refresh" type="text" readonly/>
+            </div>
+            <div id="table-list-replacer-list" class="table-list hidden">
+                名称：<input id="table-list-replacer-list-text" class="show-module-refresh" type="text"/>
+                页数：<input id="table-list-replacer-list-pageNum" class="show-module-refresh" type="text" value="1"/>
+                每页大小：<input id="table-list-replacer-list-pageSize" class="show-module-refresh" type="text" value="50"/>
+                <input id="table-list-replacer-list-confirm" type="button" value="查询"/>
+                <div id="table-list-replacer-list-table"></div>
+            </div>
+        </div>
+        <div id="table-list-holiday">
+            <input id="table-list-holiday-prev-month" type="button" value="上一月"/>
+            <span id="title-month"></span>
+            <input id="table-list-holiday-next-month" type="button" value="下一月"/>
+            <div id="table-list-holiday-month"></div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script src="jquery.min.js"></script>
+<script>
+    var year = new Date().getFullYear();
+    var month = new Date().getMonth();
+    // TODO
+    // getMonthData();
+
+    $("#getMonthPrev").click(function (event) {
+        month -= 1;
+        if (month < 0) {
+            month = 11;
+            year -= 1;
+        }
+        getMonthData();
+    });
+    $("#getMonthNext").click(function (event) {
+        month += 1;
+        if (month > 11) {
+            month = 0;
+            year += 1;
+        }
+        getMonthData();
+    });
+
+    function getMonthData() {
+        renderYearData();
+        setCurrentDay();
+        setHoliday();
+        setSettlementDay();
+    }
+    function getMonthDataV2() {
+        renderYearDataV2();
+        setHolidayV2();
+    }
+
+    function renderYearData() {
+        // var year = $("#year").val();
+        // if (year == '') {
+        //     window.alert("请先指定年份！")
+        //     return;
+        // }
+
+        // 日-六 0-6
+        var startDay = new Date(year, month, 1).getDay();
+        startDay = startDay - 1;
+        startDay = startDay < 0 ? 6 : startDay;
+        // var ss = new Array(yearDataArray.length);
+        // for (let i = 0; i < yearDataArray.length; i++) { // 循环月份
+
+        //     var month = i + 1;
+        // $("#title-month").text((month + 1) + "月");
+            var s = "";
+            s += "<div class=\"title-month\">" + (month + 1) + "月</div>";
+            s += "<table class=\"table-border\">\n" +
+                "        <thead>\n" +
+                "        <tr>\n" +
+                "            <td class=\"border\">一</td>\n" +
+                "            <td class=\"border\">二</td>\n" +
+                "            <td class=\"border\">三</td>\n" +
+                "            <td class=\"border\">四</td>\n" +
+                "            <td class=\"border\">五</td>\n" +
+                "            <td class=\"border\">六</td>\n" +
+                "            <td class=\"border\">日</td>\n" +
+                "        </tr>\n" +
+                "        </thead>\n" +
+                "        <tbody>\n";
+            // var monthData = yearDataArray[i];
+            var dayCount = new Date(year, month + 1, 0).getDate();
+
+            var cycle = 0;
+            for (let j = 0; j < dayCount; j++) { // 循环日子
+                var date = j + 1;
+                if (cycle % 7 == 0) {
+                    s += "                <tr>\n";
+                }
+                // var needSchedule = dayCount[j];
+                if (startDay > 0) { // 填充前部空白
+                    s += "<td class=\"border\"></td>\n";
+                    startDay--;
+                    j--; // 此循环不进行自增
+                }
+                // else if (needSchedule == 1) {
+                //     s += "<td class=\"border date need-schedule\">" + date + "</td>\n";
+                //     $("#day_" + settlementDay.day).attr("name", settlementDay.names);
+                // }
+                // else if (needSchedule == 0) {
+                else {
+                    var yyyy_MM_dd = year + "." + (month + 1) + "." + date;
+                    if ((cycle % 7) == 5 || (cycle % 7) == 6) {
+                        s += "<td class=\"border date no-need-schedule\" id='month_" + yyyy_MM_dd.replace(".", "_") + "' yyyy_MM_dd='" + yyyy_MM_dd + "'>" + date + "</td>\n";
+                    }
+                    else {
+                        s += "<td class=\"border date need-schedule\" id='month_" + yyyy_MM_dd.replace(".", "_") + "' yyyy_MM_dd='" + yyyy_MM_dd + "'>" + date + "</td>\n";
+                    }
+                }
+                if (cycle % 7 == 6) {
+                    s += "                </tr>\n";
+                }
+                cycle++;
+            }
+            if ((cycle % 7 - 1) != 6) { // 尾部补足
+                s += "                </tr>\n";
+            }
+
+            s += "        </tbody>\n" +
+                "    </table>\n";
+
+            // ss[i] = s;
+            startDay = cycle % 7; // 下个月份补齐
+        // }
+
+        // for (let i = 0; i < ss.length; i++) { // 渲染
+        //     var month = i + 1;
+        //     $("#month_" + month).empty();
+        //     $("#month_" + month).append(ss[i]);
+        //
+        //     while ($("#month_" + month + " > table > tbody > tr").length < 6) {
+        //         var padding = "<tr><td class=\"border\" style=\"height: 20px;\"></td></tr>";
+        //         $("#month_" + month + " > table > tbody").append(padding);
+        //     }
+        // }
+
+        $("#month").empty();
+        $("#month").append(s);
+        while ($("#month" + " > table > tbody > tr").length < 6) {
+            var padding = "<tr><td class=\"border\" style=\"height: 20px;\"></td></tr>";
+            $("#month" + " > table > tbody").append(padding);
+        }
+    }
+
+    function renderYearDataV2(selector, year, month) {
+        // var year = $("#year").val();
+        // if (year == '') {
+        //     window.alert("请先指定年份！")
+        //     return;
+        // }
+
+        // 日-六 0-6
+        var startDay = new Date(year, month, 1).getDay();
+        startDay = startDay - 1;
+        startDay = startDay < 0 ? 6 : startDay;
+        // var ss = new Array(yearDataArray.length);
+        // for (let i = 0; i < yearDataArray.length; i++) { // 循环月份
+
+        //     var month = i + 1;
+        // $("#title-month").text((month + 1) + "月");
+        var s = "";
+        s += "<div class=\"title-month\">" + (month + 1) + "月</div>";
+        s += "<table class=\"table-border\">\n" +
+            "        <thead>\n" +
+            "        <tr>\n" +
+            "            <td class=\"border\">一</td>\n" +
+            "            <td class=\"border\">二</td>\n" +
+            "            <td class=\"border\">三</td>\n" +
+            "            <td class=\"border\">四</td>\n" +
+            "            <td class=\"border\">五</td>\n" +
+            "            <td class=\"border\">六</td>\n" +
+            "            <td class=\"border\">日</td>\n" +
+            "        </tr>\n" +
+            "        </thead>\n" +
+            "        <tbody>\n";
+        // var monthData = yearDataArray[i];
+        var dayCount = new Date(year, month + 1, 0).getDate();
+
+        var cycle = 0;
+        for (let j = 0; j < dayCount; j++) { // 循环日子
+            var date = j + 1;
+            if (cycle % 7 == 0) {
+                s += "                <tr>\n";
+            }
+            // var needSchedule = dayCount[j];
+            if (startDay > 0) { // 填充前部空白
+                s += "<td class=\"border\"></td>\n";
+                startDay--;
+                j--; // 此循环不进行自增
+            }
+                // else if (needSchedule == 1) {
+                //     s += "<td class=\"border date need-schedule\">" + date + "</td>\n";
+                //     $("#day_" + settlementDay.day).attr("name", settlementDay.names);
+                // }
+            // else if (needSchedule == 0) {
+            else {
+                var yyyy_MM_dd = year + "." + (month + 1) + "." + date;
+                if ((cycle % 7) == 5 || (cycle % 7) == 6) {
+                    s += "<td class=\"border date no-need-schedule\" id='" + selector + "_" + yyyy_MM_dd.replace(".", "_") + "' yyyy_MM_dd='" + yyyy_MM_dd + "'>" + date + "</td>\n";
+                }
+                else {
+                    s += "<td class=\"border date need-schedule\" id='" + selector + "_" + yyyy_MM_dd.replace(".", "_") + "' yyyy_MM_dd='" + yyyy_MM_dd + "'>" + date + "</td>\n";
+                }
+            }
+            if (cycle % 7 == 6) {
+                s += "                </tr>\n";
+            }
+            cycle++;
+        }
+        if ((cycle % 7 - 1) != 6) { // 尾部补足
+            s += "                </tr>\n";
+        }
+
+        s += "        </tbody>\n" +
+            "    </table>\n";
+
+        // ss[i] = s;
+        startDay = cycle % 7; // 下个月份补齐
+        // }
+
+        // for (let i = 0; i < ss.length; i++) { // 渲染
+        //     var month = i + 1;
+        //     $("#month_" + month).empty();
+        //     $("#month_" + month).append(ss[i]);
+        //
+        //     while ($("#month_" + month + " > table > tbody > tr").length < 6) {
+        //         var padding = "<tr><td class=\"border\" style=\"height: 20px;\"></td></tr>";
+        //         $("#month_" + month + " > table > tbody").append(padding);
+        //     }
+        // }
+
+        $(selector).empty();
+        $(selector).append(s);
+        while ($(selector + " > table > tbody > tr").length < 6) {
+            var padding = "<tr><td class=\"border\" style=\"height: 20px;\"></td></tr>";
+            $(selector + " > table > tbody").append(padding);
+        }
+    }
+
+    function setCurrentDay() {
+        var curDate = new Date();
+        if (year != curDate.getFullYear()) { // 不是当前年份，忽略
+            return;
+        }
+        var m = curDate.getMonth();
+        var d = curDate.getDate();
+        $($("#month" + " td.date")[d - 1]).addClass("current-day");
+    }
+    function setHoliday() {
+        post("/trade/holiday/get", {
+            year: year,
+        }, (r) => {
+            var days = r.days;
+            for (let i = 0; i < days.length; i++) {
+                var day = days[i];
+                $("#month_" + day.replaceAll(".", "_")).addClass("holiday");
+            }
+        });
+
+    }
+
+    function setHolidayV2() {
+        post("/trade/holiday/get", {
+            year: year,
+        }, (r) => {
+            var days = r.days;
+            for (let i = 0; i < days.length; i++) {
+                var day = days[i];
+                $("#table-list-holiday-month_" + day.replaceAll(".", "_")).addClass("module-holiday-selected");
+            }
+        });
+
+    }
+
+    function setSettlementDay() {
+        post("/trade/settlement-day/v2", {
+            year: year,
+            month: month + 1
+        }, (r) => {
+            var settlementDays = r.settlementDays;
+            for (let i = 0; i < settlementDays.length; i++) {
+                var settlementDay = settlementDays[i];
+                $("#month_" + settlementDay.day.replaceAll(".", "_")).addClass("settlement-day");
+                $("#month_" + settlementDay.day.replaceAll(".", "_")).attr("title", settlementDay.names);
+            }
+        });
+    }
+
+
+    var tableData;
+    function renderTable(hostId, tableId, title, data) {
+        var s = "";
+        s += "<table id='" + tableId + "' class=\"table-border\">\n" +
+            "        <thead>\n" +
+            "        <tr>\n";
+        for (let i = 0; i < title.length; i++) {
+            s += "            <td class=\"border\">" + title[i].name + "</td>\n";
+        }
+        s += "        </tr>\n" +
+            "        </thead>\n" +
+            "        <tbody>\n";
+
+        for (let i = 0; i < data.length; i++) {
+            var d = data[i];
+            s += "                <tr onclick='chooseTableDataRow(this)' index='" + i + "'>\n";
+            for (let i = 0; i < title.length; i++) {
+                s += "            <td class=\"border date need-schedule\" >" + "" + d[title[i].key] + "</td>\n";
+            }
+            s += "                </tr>\n";
+            s += "";
+        }
+
+        s += "        </tbody>\n" +
+            "    </table>\n";
+
+        tableData = data;
+        $("#" + hostId).empty();
+        $("#" + hostId).append(s);
+    }
+
+    function chooseTableDataRow(e) {
+        var children = $(e).parent().children();
+        for (let i = 0; i < children.length; i++) {
+            var child = children[i];
+            $(child).removeClass("table-row-selected");
+        }
+        $(e).addClass("table-row-selected");
+
+    }
+
+    var module;
+    function showModule(name, operation) {
+        module = name;
+        $(".module").removeClass("module-selected");
+        $("#module-" + name).addClass("module-selected");
+        $(".button-list").addClass("hidden");
+        $("#button-list-" + name).removeClass("hidden");
+        if (operation != null) {
+            $(".table-list").addClass("hidden");
+            $("#table-list-" + name + "-" + operation).removeClass("hidden");
+        }
+        $(".table-list > .show-module-refresh").val(""); // 清空所有输入选项
+        $(".table-list > .show-module-refresh").removeClass("table-row-selected"); // 清空所有列表选择
+    }
+
+    function getTableSelectedData() {
+        var selectedData = $("#table-list-strategy-list .table-row-selected");
+        if (selectedData.length == 0) {
+            return;
+        }
+        var selectedElement = $(selectedData[0]);
+        var idx = selectedElement.attr("index");
+        if (idx == null) {
+            return;
+        }
+        if (tableData == null) {
+            return;
+        }
+        selectedElement.removeClass("table-row-selected");
+        return tableData[idx];
+    }
+
+    function getValue(value) {
+        if (value == null || value == '') {
+            return null;
+        }
+        return value;
+    }
+    function getValueByIdSelector(idSelector) {
+        var value = $(idSelector).val();
+        if (value == null || value == '') {
+            return null;
+        }
+        return value;
+    }
+    function addData(data, name, idSelector) {
+        var value = getValueByIdSelector(idSelector);
+        if (value != null) {
+            data[name] = value;
+        }
+    }
+
+    function get(uri, successCall, errorCall, completeCall) {
+        $.ajax({
+            url: location.origin + uri,
+            method: "GET",
+            // data: JSON.stringify(data),
+            // contentType: "application/json",
+            // headers: { },
+            success: (r) => {
+                successCall(r);
+            },
+            error: (e) => {
+                if (errorCall != null) {
+                    errorCall(e);
+                }
+                else {
+                    window.alert(e.responseText)
+                }
+            },
+            complete: () => {
+                if (completeCall != null) {
+                    completeCall();
+                }
+                else {
+                    // window.alert(e.responseText)
+                }
+            }
+        })
+    }
+    function post(uri, data, successCall, errorCall, completeCall) {
+        $.ajax({
+            url: location.origin + uri,
+            method: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            // headers: { },
+            success: (r) => {
+                successCall(r);
+            },
+            error: (e) => {
+                if (errorCall != null) {
+                    errorCall(e);
+                }
+                else {
+                    window.alert(e.responseText)
+                }
+            },
+            complete: () => {
+                if (completeCall != null) {
+                    completeCall();
+                }
+                else {
+                    // window.alert(e.responseText)
+                }
+            }
+        })
+    }
+
+    strategyModuleBindEvent();
+    replacerModuleBindEvent();
+    holidayModuleBindEvent();
+    showModule("strategy");
+
+    function strategyModuleBindEvent() {
+
+        $("#button-strategy-add").click(function (event) {
+            showModule(module, "add");
+        });
+        $("#table-list-strategy-add-confirm").click(function (event) {
+            post("/trade/strategy/add", {
+                name: $("#table-list-strategy-add-name").val(),
+                question: $("#table-list-strategy-add-question").val()
+            }, (r) => {
+                $("#button-strategy-list").click();
+            });
+        });
+        $("#table-list-strategy-add-cancel").click(function (event) {
+            $("#button-strategy-list").click();
+        });
+        $("#button-strategy-update").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            var id = data.id;
+            post("/trade/strategy/get", {
+                id: id,
+            }, (r) => {
+                $("#table-list-strategy-update-id").val(id);
+                $("#table-list-strategy-update-name").val(r.name);
+                $("#table-list-strategy-update-question").val(r.question);
+            });
+            showModule(module, "update");
+        });
+        $("#table-list-strategy-update-confirm").click(function (event) {
+            post("/trade/strategy/update", {
+                id: $("#table-list-strategy-update-id").val(),
+                name: $("#table-list-strategy-update-name").val(),
+                question: $("#table-list-strategy-update-question").val()
+            }, (r) => {
+                $("#button-strategy-list").click();
+            });
+        });
+        $("#table-list-strategy-update-cancel").click(function (event) {
+            $("#button-strategy-list").click();
+        });
+
+        $("#button-strategy-delete").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            if (!confirm("您确定要删除该数据吗？")) {
+                return;
+            }
+            var id = data.id;
+            post("/trade/strategy/delete", {
+                id: id,
+            }, (r) => {
+                $("#button-strategy-list").click();
+            });
+        });
+
+        $("#button-strategy-get").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            var id = data.id;
+            post("/trade/strategy/get", {
+                id: id,
+            }, (r) => {
+                $("#table-list-strategy-get-name").val(r.name);
+                $("#table-list-strategy-get-question").val(r.question);
+            });
+            showModule(module, "get");
+        });
+
+        $("#button-strategy-list").click(function (event) {
+            showModule(module, "list");
+            $("#table-list-strategy-list-confirm").click();
+        });
+
+        $("#table-list-strategy-list-confirm").click(function (event) {
+            var data = {};
+            addData(data, "name", "#table-list-strategy-list-name");
+            addData(data, "pageNum", "#table-list-strategy-list-pageNum");
+            addData(data, "pageSize", "#table-list-strategy-list-pageSize");
+            post("/trade/strategy/list",
+                data
+                //     {
+                //     name: getValue($("#table-list-strategy-list-name").val()),
+                //     pageNum: getValue($("#table-list-strategy-list-pageNum").val()),
+                //     pageSize: getValue($("#table-list-strategy-list-pageSize").val())
+                // }
+                , (r) => {
+                    renderTable("table-list-strategy-list-table", "table-list-strategy-list-table-body", [{
+                        "name": "编号",
+                        "key": "id"
+                    }, {
+                        "name": "名称",
+                        "key": "name"
+                    }], r.items);
+                });
+        });
+    }
+
+    function replacerModuleBindEvent() {
+
+        get("/trade/replacer/type", r => {
+            var selectHtml = "";
+            for (let i = 0; i < r.items.length; i++) {
+                var item = r.items[i];
+                selectHtml += "<option value=\"" + item.className + "\" " + (i == 0 ? " selected" : "") + ">" + item.className + "(" + item.paramCount + ")" + "</option>";
+            }
+            $("#table-list-replacer-add-class-name-select").empty();
+            $("#table-list-replacer-add-class-name-select").append(selectHtml);
+            $("#table-list-replacer-update-class-name-select").empty();
+            $("#table-list-replacer-update-class-name-select").append(selectHtml);
+        });
+
+        $("#button-replacer-add").click(function (event) {
+            showModule(module, "add");
+        });
+        $("#table-list-replacer-add-confirm").click(function (event) {
+            post("/trade/replacer/add", {
+                text: $("#table-list-replacer-add-text").val(),
+                className: $("#table-list-replacer-add-class-name").val(),
+                params: $("#table-list-replacer-add-params").val(),
+                order: $("#table-list-replacer-add-order").val(),
+            }, (r) => {
+                $("#button-replacer-list").click();
+            });
+        });
+        $("#table-list-replacer-add-cancel").click(function (event) {
+            $("#button-replacer-list").click();
+        });
+        $("#button-replacer-update").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            var id = data.id;
+            post("/trade/replacer/get", {
+                id: id,
+            }, (r) => {
+                $("#table-list-replacer-update-text").val(r.text);
+                $("#table-list-replacer-update-class-name").val(r.className);
+                $("#table-list-replacer-update-params").val(r.params);
+                $("#table-list-replacer-update-order").val(r.order);
+                $("#table-list-replacer-update-embedded").val(r.embedded);
+            });
+            showModule(module, "update");
+        });
+        $("#table-list-replacer-update-confirm").click(function (event) {
+            post("/trade/replacer/update", {
+                id: $("#table-list-replacer-update-id").val(),
+                text: $("#table-list-replacer-update-text").val(),
+                className: $("#table-list-replacer-update-class-name").val(),
+                params: $("#table-list-replacer-update-params").val(),
+                order: $("#table-list-replacer-update-order").val(),
+                embedded: $("#table-list-replacer-update-embedded").val()
+            }, (r) => {
+                $("#button-replacer-list").click();
+            });
+        });
+        $("#table-list-replacer-update-cancel").click(function (event) {
+            $("#button-replacer-list").click();
+        });
+
+        $("#button-replacer-delete").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            if (!confirm("您确定要删除该数据吗？")) {
+                return;
+            }
+            var id = data.id;
+            var embedded = data.embedded;
+            post("/trade/replacer/delete", {
+                id: id,
+                embedded: embedded
+            }, (r) => {
+                $("#button-replacer-list").click();
+            });
+        });
+
+        $("#button-replacer-get").click(function (event) {
+            var data = getTableSelectedData();
+            if (data == null) {
+                alert("请选择数据");
+                return;
+            }
+            var id = data.id;
+            post("/trade/replacer/get", {
+                id: id,
+                embedded: false
+            }, (r) => {
+                $("#table-list-replacer-get-text").val(r.text);
+                $("#table-list-replacer-get-className").val(r.className);
+                $("#table-list-replacer-get-params").val(r.params);
+                $("#table-list-replacer-get-order").val(r.order);
+                $("#table-list-replacer-get-embedded").val(r.embedded);
+            });
+            showModule(module, "get");
+        });
+
+        $("#button-replacer-list").click(function (event) {
+            showModule(module, "list");
+            $("#table-list-replacer-list-confirm").click();
+        });
+
+        $("#table-list-replacer-list-confirm").click(function (event) {
+            var data = {};
+            // addData(data, "text", "#table-list-replacer-list-text");
+            // addData(data, "pageNum", "#table-list-replacer-list-pageNum");
+            // addData(data, "pageSize", "#table-list-replacer-list-pageSize");
+            post("/trade/replacer/list",
+                data,
+                (r) => {
+                    renderTable("table-list-replacer-list-table", "table-list-replacer-list-table-body", [{
+                        "name": "编号",
+                        "key": "id"
+                    }, {
+                        "name": "文本",
+                        "key": "text"
+                    }, {
+                        "name": "类名",
+                        "key": "className"
+                    }, {
+                        "name": "参数",
+                        "key": "params"
+                    }, {
+                        "name": "顺序",
+                        "key": "order"
+                    }, {
+                        "name": "内置",
+                        "key": "embedded"
+                    }], r.items);
+                });
+        });
+    }
+
+    var module_holiday_year = new Date().getFullYear();
+    var module_holiday_month = new Date().getMonth();
+    function holidayModuleBindEvent() {
+
+        renderYearDataV2("table-list-holiday-month", module_holiday_year, module_holiday_month);
+
+        $("#table-list-holiday-prev-month").click(function (event) {
+            module_holiday_month -= 1;
+            if (module_holiday_month < 0) {
+                module_holiday_month = 11;
+                module_holiday_year -= 1;
+            }
+            getMonthData();
+        });
+        $("#table-list-holiday-next-month").click(function (event) {
+            module_holiday_month += 1;
+            if (module_holiday_month > 11) {
+                module_holiday_month = 0;
+                module_holiday_year += 1;
+            }
+            getMonthData();
+        });
+
+        $("#table-list-holiday-month > table > tbody > tr > td").click(function (event) {
+            var $e = $(event.target);
+            var isSelected = $e.hasClass("module-holiday-selected");
+            if (isSelected) {
+                post("/trade/holiday/delete", {
+                    year: module_holiday_year,
+                    day: $e.attr("yyyy_MM_dd")
+                }, (r) => {
+                    $e.removeClass("module-holiday-selected");
+                    getMonthDataV2();
+                    getMonthData();
+                });
+            }
+            else {
+                post("/trade/holiday/add", {
+                    year: module_holiday_year,
+                    day: $e.attr("yyyy_MM_dd")
+                }, (r) => {
+                    $e.addClass("module-holiday-selected");
+                    getMonthDataV2();
+                    getMonthData();
+                });
+            }
+        });
+    }
+</script>
+<!--<script src="strategy.js"></script>-->
+</body>
+</html>

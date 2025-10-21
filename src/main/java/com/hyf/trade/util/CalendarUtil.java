@@ -1,5 +1,7 @@
 package com.hyf.trade.util;
 
+import com.hyf.trade.application.db.CalendarTuning;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,10 +15,12 @@ public class CalendarUtil {
 
     private static final Calendar base = Calendar.getInstance();
 
+    @Deprecated
     public static Calendar getBaseCalendar() {
         return base;
     }
 
+    @Deprecated
     public static void setBaseCalendar(String date) {
         String[] split = date.split("\\.");
         String year = split[0];
@@ -25,12 +29,15 @@ public class CalendarUtil {
         base.set(Calendar.YEAR, Integer.parseInt(year));
         base.set(Calendar.MONTH, Integer.parseInt(month) - 1);
         base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dayOfMonth));
+
     }
 
+    @Deprecated
     public static void setBaseCalendarToTomorrow() {
         setBaseCalendarByDelta(1);
     }
 
+    @Deprecated
     public static void setBaseCalendarByDelta(int delta) {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.DAY_OF_YEAR, delta);
@@ -38,16 +45,30 @@ public class CalendarUtil {
         setBaseCalendar(date);
     }
 
+    /**
+     * @deprecated CalendarTuning rollXXX
+     */
+    @Deprecated
     public static boolean needSkip(Calendar calendar) {
         return !isTradeDay(calendar)
                 || ConfigUtil.getConfig().getHoliday().contains(to_yyyy_MM_dd(calendar))
                 || ConfigUtil.getConfig().getBlack().contains(to_yyyy_MM_dd(calendar));
     }
 
+    /**
+     * @deprecated CalendarTuning rollXXX
+     */
+    @Deprecated
     public static boolean isTradeDay(Calendar calendar) {
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         boolean notTradeDay = dayOfWeek == Calendar.SATURDAY || (dayOfWeek == Calendar.SUNDAY);
         return !notTradeDay;
+    }
+
+    public static boolean isWeekend(Calendar calendar) {
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        boolean isWeekend = dayOfWeek == Calendar.SATURDAY || (dayOfWeek == Calendar.SUNDAY);
+        return isWeekend;
     }
 
     public static String to_yyyy_MM_dd(Calendar calendar) {
@@ -115,6 +136,10 @@ public class CalendarUtil {
         return d;
     }
 
+    /**
+     * @deprecated CalendarTuning rollXXX
+     */
+    @Deprecated
     public static void addCalendarSupportSkip(Calendar calendar, int field, int value) {
         do {
             calendar.add(field, value);
@@ -123,6 +148,10 @@ public class CalendarUtil {
         while (needSkip(calendar));
     }
 
+    /**
+     * @deprecated CalendarTuning rollXXX
+     */
+    @Deprecated
     public static void addCalendarForwardOneByOneSupportSkip(Calendar calendar, int field, int value) {
         int time = value > 0 ? value : value / -1;
         boolean neg = value < 0;

@@ -16,6 +16,18 @@ import java.util.Map;
  */
 public class StrategyUtil {
 
+    public static String transformPrompt(PromptStrategyFactory promptStrategyFactory, String prompt, Calendar baseCalendar) {
+        Map<String, PromptStrategy> strategyMap = promptStrategyFactory.build();
+        PromptStrategyContext context = new PromptStrategyContext(baseCalendar);
+        for (Map.Entry<String, PromptStrategy> entry : strategyMap.entrySet()) {
+            prompt = prompt.replace(entry.getKey(), entry.getValue().getStrategy(context));
+        }
+
+        prompt = Compactor.compact(prompt);
+
+        return prompt;
+    }
+
     public static String transformStrategy(String prompt, Calendar baseCalendar) {
 
         Map<String, PromptStrategy> strategyMap = strategyMap();

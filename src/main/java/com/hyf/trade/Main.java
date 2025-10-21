@@ -1,5 +1,6 @@
 package com.hyf.trade;
 
+import com.hyf.trade.application.db.CalendarTuning;
 import com.hyf.trade.core.SealedOrderAmountCalculator;
 import com.hyf.trade.util.*;
 
@@ -15,12 +16,12 @@ public class Main {
         // System.setProperty("jarMode", "true");
 
         Config config = ConfigUtil.getConfig();
-        initBaseCalendar(config);
+        CalendarTuning calendar = initBaseCalendar(config);
 
-        generateStrategy(config, "/strategy/strategy.txt");
-        generateStrategy(config, "/strategy/strategy2.txt");
-        generateStrategy(config, "/strategy/strategy4.txt");
-        generateStrategy(config, "/strategy/strategy5.txt");
+        generateStrategy(calendar, config, "/strategy/strategy.txt");
+        generateStrategy(calendar, config, "/strategy/strategy2.txt");
+        generateStrategy(calendar, config, "/strategy/strategy4.txt");
+        generateStrategy(calendar, config, "/strategy/strategy5.txt");
 
         printResentSettlementDay();
 
@@ -33,12 +34,12 @@ public class Main {
         // TradeUtil.printSettlementDays(2025);
     }
 
-    private static void generateStrategy(Config config, String strategyPath) {
+    private static void generateStrategy(CalendarTuning calendar, Config config, String strategyPath) {
         String prompt = ConfigUtil.getStrategy(strategyPath);
         AssertUtil.notBlank(prompt);
 
         System.out.println();
-        Calendar base = CalendarUtil.copy(CalendarUtil.getBaseCalendar());
+        Calendar base = calendar.copyAndGet();
         for (int i = 0; i < config.getLoop(); i++) {
             if (CalendarUtil.needSkip(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
@@ -50,14 +51,14 @@ public class Main {
         }
     }
 
-    private static void initBaseCalendar(Config config) {
+    private static CalendarTuning initBaseCalendar(Config config) {
         String baseString = config.getBase();
         if (baseString.contains(".")) {
-            CalendarUtil.setBaseCalendar(baseString);
+            return CalendarTuning.with(baseString);
         }
         else {
             int delta = Integer.parseInt(baseString);
-            CalendarUtil.setBaseCalendarByDelta(delta);
+            return CalendarTuning.create().dayAdd(delta);
         }
     }
 
