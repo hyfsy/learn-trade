@@ -20,8 +20,9 @@ public class Main {
 
         generateStrategy(calendar, config, "/strategy/strategy.txt");
         generateStrategy(calendar, config, "/strategy/strategy2.txt");
-        generateStrategy(calendar, config, "/strategy/strategy4.txt");
-        generateStrategy(calendar, config, "/strategy/strategy5.txt");
+        // generateStrategy(calendar, config, "/strategy/strategy4.txt");
+        // generateStrategy(calendar, config, "/strategy/strategy5.txt");
+        generateStrategy(calendar, config, "/strategy/strategy6.txt");
 
         printResentSettlementDay();
 
