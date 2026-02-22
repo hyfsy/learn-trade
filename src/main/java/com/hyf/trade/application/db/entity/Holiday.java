@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class Holiday {
 
-    private Boolean synced;
+    private boolean synced;
     private Integer year;
     private List<String> days = new ArrayList<>();
 

@@ -23,6 +23,8 @@ public class Main {
         // generateStrategy(calendar, config, "/strategy/strategy4.txt");
         // generateStrategy(calendar, config, "/strategy/strategy5.txt");
         generateStrategy(calendar, config, "/strategy/strategy6.txt");
+        // generateStrategy(calendar, config, "/strategy/strategy8.txt");
+        generateStrategy(calendar, config, "/strategy/strategy9.txt");
 
         printResentSettlementDay();
 
@@ -41,7 +43,8 @@ public class Main {
 
         System.out.println();
         Calendar base = calendar.copyAndGet();
-        for (int i = 0; i < config.getLoop(); i++) {
+        int loop = getLoopCount(calendar, config);
+        for (int i = 0; i < loop; i++) {
             if (CalendarUtil.needSkip(base)) {
                 base.add(Calendar.DAY_OF_YEAR, -1);
                 continue;
@@ -61,6 +64,21 @@ public class Main {
             int delta = Integer.parseInt(baseString);
             return CalendarTuning.create().dayAdd(delta);
         }
+    }
+
+    private static int getLoopCount(CalendarTuning base, Config config) {
+        CalendarTuning now = CalendarTuning.create();
+        int loop = config.getLoop();
+        if (loop == -1) {
+            int dayCount = 0;
+            base = base.copy();
+            while (base.compare_yyyy_MM_dd(now) < 1) {
+                dayCount++;
+                base.dayAdd(1);
+            }
+            loop = dayCount;
+        }
+        return loop;
     }
 
     private static void printResentSettlementDay() {

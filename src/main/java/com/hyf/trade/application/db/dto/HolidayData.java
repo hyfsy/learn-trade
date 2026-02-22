@@ -16,7 +16,19 @@ public class HolidayData {
     public static List<String> get(int year) {
         return getData(year).dates.stream()
                 .filter(item -> item.type.equals("public_holiday"))
-                .map(item -> item.date.replace("-", "."))
+                .map(item -> item.date.split("-"))
+                // 去除前缀0
+                .map(item -> {
+                    for (int i = 0; i < item.length; i++) {
+                        String ite = item[i];
+                        while (ite.startsWith("0")) {
+                            ite = ite.substring(1);
+                        }
+                        item[i] = ite;
+                    }
+                    return String.join(".", item);
+                })
+                // .map(item -> item.date.replace("-", "."))
                 .collect(Collectors.toList());
     }
 

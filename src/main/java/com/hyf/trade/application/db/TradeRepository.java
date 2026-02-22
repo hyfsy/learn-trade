@@ -1,6 +1,7 @@
 package com.hyf.trade.application.db;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hyf.trade.application.Constants;
 import com.hyf.trade.application.db.dto.HolidayData;
 import com.hyf.trade.application.db.dto.StrategyDTO;
@@ -123,7 +124,7 @@ public class TradeRepository {
             throw new IllegalArgumentException("year is coming");
         }
         Holiday holiday = getHoliday(year);
-        if (!holiday.getSynced()) {
+        if (!holiday.isSynced()) {
             List<String> days = HolidayData.get(year);
             for (String day : days) {
                 holiday.add(day);
@@ -170,7 +171,7 @@ public class TradeRepository {
     }
 
     private void store() {
-        FileUtil.write(CONFIG_FILE, JSON.toJSONString(tradeConfig));
+        FileUtil.write(CONFIG_FILE, JSON.toJSONString(tradeConfig, SerializerFeature.PrettyFormat));
     }
 
     private void reload() {
